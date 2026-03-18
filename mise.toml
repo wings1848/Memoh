@@ -119,6 +119,10 @@ run = "cd packages/cli && npm install -g"
 description = "Install socktainer"
 run = "brew tap socktainer/tap && brew install socktainer"
 
+[tasks.install-workspace-toolkit]
+description = "Install workspace toolkit"
+run = "cd docker/toolkit && ./install.sh"
+
 [tasks.lint]
 description = "Run all linters"
 depends = [
@@ -152,6 +156,7 @@ run = "pnpm lint:fix"
 [tasks.setup]
 description = "Setup development environment"
 depends = [
+  "//:install-workspace-toolkit",
   "//:sqlc-generate",
   "//:pnpm-install",
   "//:go-install",
