@@ -9,11 +9,11 @@
           {{ curProvider.name }}
         </h3>
         <p class="text-xs text-muted-foreground mt-0.5">
-          {{ $t(`memoryProvider.providerNames.${curProvider.provider}`, curProvider.provider) }}
+          {{ $t(`memory.providerNames.${curProvider.provider}`, curProvider.provider) }}
         </p>
       </div>
       <ConfirmPopover
-        :message="$t('memoryProvider.deleteConfirm')"
+        :message="$t('memory.deleteConfirm')"
         @confirm="handleDelete"
       >
         <template #trigger>
@@ -36,19 +36,19 @@
 
     <!-- Name -->
     <div class="space-y-2">
-      <Label>{{ $t('memoryProvider.name') }}</Label>
+      <Label>{{ $t('memory.name') }}</Label>
       <Input
         v-model="form.name"
-        :placeholder="$t('memoryProvider.namePlaceholder')"
+        :placeholder="$t('memory.namePlaceholder')"
       />
     </div>
 
     <!-- Builtin Config (model selectors) -->
     <template v-if="curProvider.provider === 'builtin'">
       <div class="space-y-2">
-        <Label>{{ $t('memoryProvider.builtinMode') }}</Label>
+        <Label>{{ $t('memory.builtinMode') }}</Label>
         <p class="text-xs text-muted-foreground">
-          {{ $t('memoryProvider.builtinModeDescription') }}
+          {{ $t('memory.builtinModeDescription') }}
         </p>
         <div class="inline-flex rounded-xl border border-border bg-muted/70 p-1">
           <div class="relative grid grid-cols-3">
@@ -62,7 +62,7 @@
               :class="builtinModeButtonClass('off')"
               @click="handleBuiltinModeChange('off')"
             >
-              {{ $t('memoryProvider.modeNames.off') }}
+              {{ $t('memory.modeNames.off') }}
             </button>
             <button
               type="button"
@@ -70,7 +70,7 @@
               :class="builtinModeButtonClass('sparse')"
               @click="handleBuiltinModeChange('sparse')"
             >
-              {{ $t('memoryProvider.modeNames.sparse') }}
+              {{ $t('memory.modeNames.sparse') }}
             </button>
             <button
               type="button"
@@ -78,7 +78,7 @@
               :class="builtinModeButtonClass('dense')"
               @click="handleBuiltinModeChange('dense')"
             >
-              {{ $t('memoryProvider.modeNames.dense') }}
+              {{ $t('memory.modeNames.dense') }}
             </button>
           </div>
         </div>
@@ -89,10 +89,10 @@
         class="rounded-lg border border-border bg-card p-4 space-y-2"
       >
         <h4 class="text-xs font-medium">
-          {{ $t('memoryProvider.modeNames.off') }}
+          {{ $t('memory.modeNames.off') }}
         </h4>
         <p class="text-xs text-muted-foreground">
-          {{ $t('memoryProvider.modeDescriptions.off') }}
+          {{ $t('memory.modeDescriptions.off') }}
         </p>
       </div>
 
@@ -102,15 +102,15 @@
       >
         <div class="space-y-1">
           <h4 class="text-xs font-medium">
-            {{ $t('memoryProvider.sparseSectionTitle') }}
+            {{ $t('memory.sparseSectionTitle') }}
           </h4>
           <p class="text-xs text-muted-foreground">
-            {{ $t('memoryProvider.modeDescriptions.sparse') }}
+            {{ $t('memory.modeDescriptions.sparse') }}
           </p>
         </div>
 
         <div class="rounded-md border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
-          {{ $t('memoryProvider.sparseInstallHint') }}
+          {{ $t('memory.sparseInstallHint') }}
         </div>
       </div>
 
@@ -120,29 +120,29 @@
       >
         <div class="space-y-1">
           <h4 class="text-xs font-medium">
-            {{ $t('memoryProvider.denseSectionTitle') }}
+            {{ $t('memory.denseSectionTitle') }}
           </h4>
           <p class="text-xs text-muted-foreground">
-            {{ $t('memoryProvider.modeDescriptions.dense') }}
+            {{ $t('memory.modeDescriptions.dense') }}
           </p>
         </div>
 
         <div class="space-y-2">
-          <Label>{{ $t('memoryProvider.denseEmbeddingModel') }}</Label>
+          <Label>{{ $t('memory.denseEmbeddingModel') }}</Label>
           <p class="text-xs text-muted-foreground">
-            {{ $t('memoryProvider.denseEmbeddingModelDescription') }}
+            {{ $t('memory.denseEmbeddingModelDescription') }}
           </p>
           <ModelSelect
             v-model="configForm.embedding_model_id"
             :models="models"
             :providers="providers"
             model-type="embedding"
-            :placeholder="$t('memoryProvider.denseEmbeddingModel')"
+            :placeholder="$t('memory.denseEmbeddingModel')"
           />
         </div>
 
         <div class="rounded-md border border-border bg-background px-3 py-2 text-xs text-muted-foreground">
-          {{ $t('memoryProvider.denseQdrantHint') }}
+          {{ $t('memory.denseQdrantHint') }}
         </div>
       </div>
 
@@ -163,17 +163,17 @@
               class="text-xs"
               :class="collection.qdrant?.ok ? 'text-foreground' : 'text-destructive'"
             >
-              {{ collection.qdrant?.ok ? $t('memoryProvider.collectionHealthy') : $t('memoryProvider.collectionUnavailable') }}
+              {{ collection.qdrant?.ok ? $t('memory.collectionHealthy') : $t('memory.collectionUnavailable') }}
             </span>
           </div>
           <p class="text-2xl font-semibold text-foreground">
             {{ collection.points ?? 0 }}
           </p>
           <p class="text-xs text-muted-foreground">
-            {{ $t('memoryProvider.collectionPoints') }}
+            {{ $t('memory.collectionPoints') }}
           </p>
           <p class="text-xs text-muted-foreground">
-            {{ collection.exists ? $t('memoryProvider.collectionExists') : $t('memoryProvider.collectionMissing') }}
+            {{ collection.exists ? $t('memory.collectionExists') : $t('memory.collectionMissing') }}
           </p>
         </div>
       </div>
@@ -351,7 +351,7 @@ async function handleSave() {
     if (curProvider?.value && data) {
       Object.assign(curProvider.value, data)
     }
-    toast.success(t('memoryProvider.saveSuccess'))
+    toast.success(t('memory.saveSuccess'))
     queryCache.invalidateQueries({ key: ['memory-providers'] })
   } catch (error) {
     console.error('Failed to save:', error)
@@ -369,11 +369,11 @@ async function handleDelete() {
       path: { id: curProvider.value.id! },
       throwOnError: true,
     })
-    toast.success(t('memoryProvider.deleteSuccess'))
+    toast.success(t('memory.deleteSuccess'))
     queryCache.invalidateQueries({ key: ['memory-providers'] })
   } catch (error) {
     console.error('Failed to delete:', error)
-    toast.error(t('memoryProvider.deleteFailed'))
+    toast.error(t('memory.deleteFailed'))
   } finally {
     deleteLoading.value = false
   }

@@ -47,7 +47,7 @@
         <section>
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-xs font-medium">
-              {{ $t('ttsProvider.models') }}
+              {{ $t('speech.models') }}
             </h3>
             <div
               v-if="curProviderId"
@@ -61,7 +61,7 @@
                 @click="handleImportModels"
               >
                 <FontAwesomeIcon :icon="['fas', 'file-import']" />
-                {{ $t('ttsProvider.importModels') }}
+                {{ $t('speech.importModels') }}
               </LoadingButton>
               <AddTtsModel
                 :provider-id="curProviderId"
@@ -74,7 +74,7 @@
             v-if="providerModels.length === 0"
             class="text-xs text-muted-foreground py-4 text-center"
           >
-            {{ $t('ttsProvider.noModels') }}
+            {{ $t('speech.noModels') }}
           </div>
 
           <div
@@ -119,7 +119,7 @@
 
       <section class="flex justify-end mt-6 gap-4">
         <ConfirmPopover
-          :message="$t('ttsProvider.deleteConfirm')"
+          :message="$t('speech.deleteConfirm')"
           :loading="deleteLoading"
           @confirm="handleDelete"
         >
@@ -289,11 +289,11 @@ async function handleImportModels() {
       headers: authHeaders(),
     })
     if (!resp.ok) throw new Error('Import failed')
-    toast.success(t('ttsProvider.importSuccess'))
+    toast.success(t('speech.importSuccess'))
     refreshModels()
     queryCache.invalidateQueries({ key: ['tts-models'] })
   } catch (e: unknown) {
-    toast.error(e instanceof Error ? e.message : t('ttsProvider.importFailed'))
+    toast.error(e instanceof Error ? e.message : t('speech.importFailed'))
   } finally {
     importLoading.value = false
   }

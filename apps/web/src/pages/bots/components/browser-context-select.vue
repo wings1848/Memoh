@@ -4,9 +4,9 @@
     :options="options"
     :placeholder="placeholder || ''"
     :aria-label="placeholder || 'Select browser context'"
-    :search-placeholder="$t('browserContext.searchPlaceholder')"
+    :search-placeholder="$t('browser.searchPlaceholder')"
     search-aria-label="Search browser contexts"
-    :empty-text="$t('browserContext.emptyTitle')"
+    :empty-text="$t('browser.emptyTitle')"
     :show-group-headers="false"
   >
     <template #trigger="{ open, displayLabel }">

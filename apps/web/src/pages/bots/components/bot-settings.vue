@@ -40,7 +40,7 @@
         class="rounded-md border border-border bg-card px-3 py-2 text-xs text-muted-foreground"
       >
         {{ $t('bots.settings.memoryModePreview', {
-          mode: $t(`memoryProvider.modeNames.${selectedBuiltinMemoryMode}`),
+          mode: $t(`memory.modeNames.${selectedBuiltinMemoryMode}`),
         }) }}
       </div>
       <div

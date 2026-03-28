@@ -4,9 +4,9 @@
     :options="options"
     :placeholder="placeholder || ''"
     :aria-label="placeholder || 'Select TTS provider'"
-    :search-placeholder="$t('ttsProvider.searchPlaceholder')"
+    :search-placeholder="$t('speech.searchPlaceholder')"
     search-aria-label="Search TTS providers"
-    :empty-text="$t('ttsProvider.emptyTitle')"
+    :empty-text="$t('speech.emptyTitle')"
     :show-group-headers="false"
   >
     <template #trigger="{ open, displayLabel }">

@@ -62,7 +62,7 @@
             <SidebarMenuButton
               :tooltip="displayTitle"
               class="h-10 px-2.5"
-              @click="router.push({ name: 'settings' })"
+              @click="router.push({ name: 'profile' })"
             >
               <div class="size-9 shrink-0 rounded-full border border-border bg-accent overflow-hidden p-[1.385px]">
                 <img

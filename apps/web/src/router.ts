@@ -58,51 +58,51 @@ const routes = [
         ],
       },
       {
-        name: 'models',
-        path: 'models',
-        component: () => import('@/pages/models/index.vue'),
+        name: 'providers',
+        path: 'providers',
+        component: () => import('@/pages/providers/index.vue'),
         meta: {
-          breadcrumb: i18nRef('sidebar.models'),
+          breadcrumb: i18nRef('sidebar.providers'),
         },
       },
       {
-        name: 'search-providers',
-        path: 'search-providers',
-        component: () => import('@/pages/search-providers/index.vue'),
+        name: 'web-search',
+        path: 'web-search',
+        component: () => import('@/pages/web-search/index.vue'),
         meta: {
-          breadcrumb: i18nRef('sidebar.searchProvider'),
+          breadcrumb: i18nRef('sidebar.webSearch'),
         },
       },
       {
-        name: 'memory-providers',
-        path: 'memory-providers',
-        component: () => import('@/pages/memory-providers/index.vue'),
+        name: 'memory',
+        path: 'memory',
+        component: () => import('@/pages/memory/index.vue'),
         meta: {
-          breadcrumb: i18nRef('sidebar.memoryProvider'),
+          breadcrumb: i18nRef('sidebar.memory'),
         },
       },
       {
-        name: 'tts-providers',
-        path: 'tts-providers',
-        component: () => import('@/pages/tts-providers/index.vue'),
+        name: 'speech',
+        path: 'speech',
+        component: () => import('@/pages/speech/index.vue'),
         meta: {
-          breadcrumb: i18nRef('sidebar.ttsProvider'),
+          breadcrumb: i18nRef('sidebar.speech'),
         },
       },
       {
-        name: 'email-providers',
-        path: 'email-providers',
-        component: () => import('@/pages/email-providers/index.vue'),
+        name: 'email',
+        path: 'email',
+        component: () => import('@/pages/email/index.vue'),
         meta: {
-          breadcrumb: i18nRef('sidebar.emailProvider'),
+          breadcrumb: i18nRef('sidebar.email'),
         },
       },
       {
-        name: 'browser-contexts',
-        path: 'browser-contexts',
-        component: () => import('@/pages/browser-contexts/index.vue'),
+        name: 'browser',
+        path: 'browser',
+        component: () => import('@/pages/browser/index.vue'),
         meta: {
-          breadcrumb: i18nRef('sidebar.browserContexts'),
+          breadcrumb: i18nRef('sidebar.browser'),
         },
       },
       {
@@ -114,7 +114,7 @@ const routes = [
         },
       },
       {
-        name: 'settings',
+        name: 'profile',
         path: 'profile',
         component: () => import('@/pages/settings/index.vue'),
         meta: {

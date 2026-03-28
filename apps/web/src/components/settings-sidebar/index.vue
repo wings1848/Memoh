@@ -96,33 +96,33 @@ const navItems = computed(() => [
     icon: ['fas', 'robot'],
   },
   {
-    title: t('sidebar.models'),
-    name: 'models',
+    title: t('sidebar.providers'),
+    name: 'providers',
     icon: ['fas', 'cubes'],
   },
   {
-    title: t('sidebar.searchProvider'),
-    name: 'search-providers',
+    title: t('sidebar.webSearch'),
+    name: 'web-search',
     icon: ['fas', 'globe'],
   },
   {
-    title: t('sidebar.memoryProvider'),
-    name: 'memory-providers',
+    title: t('sidebar.memory'),
+    name: 'memory',
     icon: ['fas', 'brain'],
   },
   {
-    title: t('sidebar.ttsProvider'),
-    name: 'tts-providers',
+    title: t('sidebar.speech'),
+    name: 'speech',
     icon: ['fas', 'volume-high'],
   },
   {
-    title: t('sidebar.emailProvider'),
-    name: 'email-providers',
+    title: t('sidebar.email'),
+    name: 'email',
     icon: ['fas', 'envelope'],
   },
   {
-    title: t('sidebar.browserContexts'),
-    name: 'browser-contexts',
+    title: t('sidebar.browser'),
+    name: 'browser',
     icon: ['fas', 'window-maximize'],
   },
   {
@@ -132,7 +132,7 @@ const navItems = computed(() => [
   },
   {
     title: t('sidebar.settings'),
-    name: 'settings',
+    name: 'profile',
     icon: ['fas', 'gear'],
   },
 ])

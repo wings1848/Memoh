@@ -2,9 +2,9 @@
   <section>
     <FormDialogShell
       v-model:open="open"
-      :title="$t('searchProvider.add')"
+      :title="$t('email.add')"
       :cancel-text="$t('common.cancel')"
-      :submit-text="$t('searchProvider.add')"
+      :submit-text="$t('email.add')"
       :submit-disabled="(form.meta.value.valid === false) || isLoading"
       :loading="isLoading"
       @submit="handleCreate"
@@ -17,7 +17,7 @@
           <FontAwesomeIcon
             :icon="['fas', 'plus']"
             class="mr-1"
-          /> {{ $t('searchProvider.add') }}
+          /> {{ $t('email.add') }}
         </Button>
       </template>
       <template #body>
@@ -27,19 +27,15 @@
             name="name"
           >
             <FormItem>
-              <Label
-                class="mb-2"
-                :for="componentField.id || 'search-provider-create-name'"
-              >
+              <Label :for="componentField.id || 'email-provider-name'">
                 {{ $t('common.name') }}
               </Label>
               <FormControl>
                 <Input
-                  :id="componentField.id || 'search-provider-create-name'"
+                  :id="componentField.id || 'email-provider-name'"
                   type="text"
                   :placeholder="$t('common.namePlaceholder')"
                   v-bind="componentField"
-                  :aria-label="$t('common.name')"
                 />
               </FormControl>
             </FormItem>
@@ -49,29 +45,25 @@
             name="provider"
           >
             <FormItem>
-              <Label
-                class="mb-2"
-                :for="componentField.id || 'search-provider-create-type'"
-              >
-                {{ $t('searchProvider.provider') }}
+              <Label :for="componentField.id || 'email-provider-type'">
+                {{ $t('email.providerType') }}
               </Label>
               <FormControl>
                 <Select v-bind="componentField">
                   <SelectTrigger
-                    :id="componentField.id || 'search-provider-create-type'"
+                    :id="componentField.id || 'email-provider-type'"
                     class="w-full"
-                    :aria-label="$t('searchProvider.provider')"
                   >
                     <SelectValue :placeholder="$t('common.typePlaceholder')" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectItem
-                        v-for="type in PROVIDER_TYPES"
-                        :key="type"
-                        :value="type"
+                        v-for="meta in providerMetas"
+                        :key="meta.provider"
+                        :value="meta.provider!"
                       >
-                        {{ $t(`searchProvider.providerNames.${type}`, type) }}
+                        {{ meta.display_name }}
                       </SelectItem>
                     </SelectGroup>
                   </SelectContent>
@@ -103,45 +95,47 @@ import {
 import { toTypedSchema } from '@vee-validate/zod'
 import z from 'zod'
 import { useForm } from 'vee-validate'
-import { useMutation, useQueryCache } from '@pinia/colada'
-import { postSearchProviders } from '@memohai/sdk'
-import type { SearchprovidersCreateRequest } from '@memohai/sdk'
+import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
+import { postEmailProviders, getEmailProvidersMeta } from '@memohai/sdk'
+import type { EmailCreateProviderRequest } from '@memohai/sdk'
 import { useI18n } from 'vue-i18n'
 import FormDialogShell from '@/components/form-dialog-shell/index.vue'
 import { useDialogMutation } from '@/composables/useDialogMutation'
-
-const PROVIDER_TYPES = ['brave', 'bing', 'google', 'tavily', 'sogou', 'serper', 'searxng', 'jina', 'exa', 'bocha', 'duckduckgo', 'yandex'] as const
 
 const open = defineModel<boolean>('open')
 const { t } = useI18n()
 const { run } = useDialogMutation()
 
-const queryCache = useQueryCache()
-const { mutateAsync: createProviderMutation, isLoading } = useMutation({
-  mutation: async (data: Record<string, unknown>) => {
-    const { data: result } = await postSearchProviders({ body: data as SearchprovidersCreateRequest, throwOnError: true })
-    return result
+const { data: providerMetas } = useQuery({
+  key: () => ['email-providers-meta'],
+  query: async () => {
+    const { data } = await getEmailProvidersMeta({ throwOnError: true })
+    return data
   },
-  onSettled: () => queryCache.invalidateQueries({ key: ['search-providers'] }),
 })
 
-const providerSchema = toTypedSchema(z.object({
+const queryCache = useQueryCache()
+const { mutateAsync: createMutation, isLoading } = useMutation({
+  mutation: async (data: Record<string, unknown>) => {
+    const { data: result } = await postEmailProviders({ body: data as EmailCreateProviderRequest, throwOnError: true })
+    return result
+  },
+  onSettled: () => queryCache.invalidateQueries({ key: ['email-providers'] }),
+})
+
+const schema = toTypedSchema(z.object({
   name: z.string().min(1),
   provider: z.string().min(1),
 }))
 
-const form = useForm({
-  validationSchema: providerSchema,
-})
+const form = useForm({ validationSchema: schema })
 
 const handleCreate = form.handleSubmit(async (value) => {
   await run(
-    () => createProviderMutation({ ...value, config: {} }),
+    () => createMutation({ ...value, config: {} }),
     {
       fallbackMessage: t('common.saveFailed'),
-      onSuccess: () => {
-        open.value = false
-      },
+      onSuccess: () => { open.value = false },
     },
   )
 })

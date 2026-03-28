@@ -58,17 +58,17 @@
     "session": "Session",
     "chat": "Chat",
     "bots": "Bots",
-    "models": "Providers",
-    "searchProvider": "Web Search",
-    "memoryProvider": "Memory",
-    "ttsProvider": "Speech",
-    "emailProvider": "Email",
+    "providers": "Providers",
+    "webSearch": "Web Search",
+    "memory": "Memory",
+    "speech": "Speech",
+    "email": "Email",
     "settings": "Settings",
     "home": "Home",
     "mcp": "MCP",
     "platform": "Platform",
     "usage": "Usage",
-    "browserContexts": "Browser"
+    "browser": "Browser"
   },
   "breadcrumb": {
     "main": "Home"
@@ -179,7 +179,7 @@
     "searchSessionPlaceholder": "Search"
   },
   "models": {
-    "title": "Providers",
+    "title": "Models",
     "searchPlaceholder": "Search providers…",
     "addModel": "Add Model",
     "editModel": "Edit Model",
@@ -260,7 +260,7 @@
       }
     }
   },
-  "searchProvider": {
+  "webSearch": {
     "title": "Web Search",
     "add": "Add Web Search",
     "empty": "No search providers",
@@ -289,7 +289,7 @@
       "yandex": "Yandex"
     }
   },
-  "memoryProvider": {
+  "memory": {
     "title": "Memory Providers",
     "add": "Add Memory Provider",
     "empty": "No memory providers",
@@ -337,7 +337,7 @@
       "openviking": "OpenViking"
     }
   },
-  "ttsProvider": {
+  "speech": {
     "title": "Speech",
     "add": "Add Speech Provider",
     "providerType": "Provider Type",
@@ -373,7 +373,7 @@
       "failed": "Synthesis failed"
     }
   },
-  "emailProvider": {
+  "email": {
     "title": "Email",
     "add": "Add Email",
     "providerType": "Provider Type",
@@ -416,7 +416,7 @@
       "logoutFailed": "Failed to revoke authorization"
     }
   },
-  "browserContext": {
+  "browser": {
     "title": "Browser Contexts",
     "add": "Add Browser Context",
     "searchPlaceholder": "Search browser contexts...",
@@ -1088,7 +1088,7 @@
     }
   },
   "usage": {
-    "title": "Token Usage",
+    "title": "Usage",
     "selectBot": "Select Bot",
     "selectBotPlaceholder": "Choose a bot to view usage",
     "timeRange": "Time Range",

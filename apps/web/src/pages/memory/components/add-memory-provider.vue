@@ -9,23 +9,23 @@
           :icon="['fas', 'plus']"
           class="mr-2"
         />
-        {{ $t('memoryProvider.add') }}
+        {{ $t('memory.add') }}
       </Button>
     </DialogTrigger>
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle>{{ $t('memoryProvider.add') }}</DialogTitle>
+        <DialogTitle>{{ $t('memory.add') }}</DialogTitle>
       </DialogHeader>
       <div class="space-y-4 py-4">
         <div class="space-y-2">
-          <Label>{{ $t('memoryProvider.name') }}</Label>
+          <Label>{{ $t('memory.name') }}</Label>
           <Input
             v-model="form.name"
-            :placeholder="$t('memoryProvider.namePlaceholder')"
+            :placeholder="$t('memory.namePlaceholder')"
           />
         </div>
         <div class="space-y-2">
-          <Label>{{ $t('memoryProvider.provider') }}</Label>
+          <Label>{{ $t('memory.provider') }}</Label>
           <Select v-model:model-value="form.provider">
             <SelectTrigger>
               <SelectValue />
@@ -33,13 +33,13 @@
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="builtin">
-                  {{ $t('memoryProvider.providerNames.builtin') }}
+                  {{ $t('memory.providerNames.builtin') }}
                 </SelectItem>
                 <SelectItem value="mem0">
-                  {{ $t('memoryProvider.providerNames.mem0') }}
+                  {{ $t('memory.providerNames.mem0') }}
                 </SelectItem>
                 <SelectItem value="openviking">
-                  {{ $t('memoryProvider.providerNames.openviking') }}
+                  {{ $t('memory.providerNames.openviking') }}
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -115,7 +115,7 @@ async function handleCreate() {
       },
       throwOnError: true,
     })
-    toast.success(t('memoryProvider.saveSuccess'))
+    toast.success(t('memory.saveSuccess'))
     queryCache.invalidateQueries({ key: ['memory-providers'] })
     open.value = false
     form.name = ''

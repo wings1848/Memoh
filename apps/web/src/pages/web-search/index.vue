@@ -114,8 +114,8 @@ const openStatus = reactive({
             <FontAwesomeIcon :icon="['fas', 'globe']" />
           </EmptyMedia>
         </EmptyHeader>
-        <EmptyTitle>{{ $t('searchProvider.emptyTitle') }}</EmptyTitle>
-        <EmptyDescription>{{ $t('searchProvider.emptyDescription') }}</EmptyDescription>
+        <EmptyTitle>{{ $t('webSearch.emptyTitle') }}</EmptyTitle>
+        <EmptyDescription>{{ $t('webSearch.emptyDescription') }}</EmptyDescription>
         <EmptyContent>
           <Button            
             variant="outline"
@@ -124,7 +124,7 @@ const openStatus = reactive({
             <FontAwesomeIcon
               :icon="['fas', 'plus']"
               class="mr-1"
-            /> {{ $t('searchProvider.add') }}
+            /> {{ $t('webSearch.add') }}
           </Button>
         </EmptyContent>
       </Empty>

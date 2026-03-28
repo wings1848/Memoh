@@ -108,8 +108,8 @@ const openStatus = reactive({
             <FontAwesomeIcon :icon="['fas', 'window-maximize']" />
           </EmptyMedia>
         </EmptyHeader>
-        <EmptyTitle>{{ $t('browserContext.emptyTitle') }}</EmptyTitle>
-        <EmptyDescription>{{ $t('browserContext.emptyDescription') }}</EmptyDescription>
+        <EmptyTitle>{{ $t('browser.emptyTitle') }}</EmptyTitle>
+        <EmptyDescription>{{ $t('browser.emptyDescription') }}</EmptyDescription>
         <EmptyContent>
           <Button
             variant="outline"
@@ -118,7 +118,7 @@ const openStatus = reactive({
             <FontAwesomeIcon
               :icon="['fas', 'plus']"
               class="mr-1"
-            /> {{ $t('browserContext.add') }}
+            /> {{ $t('browser.add') }}
           </Button>
         </EmptyContent>
       </Empty>

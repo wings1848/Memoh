@@ -82,13 +82,13 @@
           v-else-if="form.values.provider"
           class="text-xs text-muted-foreground"
         >
-          {{ $t('searchProvider.unsupportedProvider') }}
+          {{ $t('webSearch.unsupportedProvider') }}
         </div>
       </div>
 
       <section class="flex justify-end mt-4 gap-4">
         <ConfirmPopover
-          :message="$t('searchProvider.deleteConfirm')"
+          :message="$t('webSearch.deleteConfirm')"
           :loading="deleteLoading"
           @confirm="deleteProvider"
         >

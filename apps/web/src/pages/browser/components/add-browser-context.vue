@@ -2,9 +2,9 @@
   <section>
     <FormDialogShell
       v-model:open="open"
-      :title="$t('browserContext.add')"
+      :title="$t('browser.add')"
       :cancel-text="$t('common.cancel')"
-      :submit-text="$t('browserContext.add')"
+      :submit-text="$t('browser.add')"
       :submit-disabled="(form.meta.value.valid === false) || isLoading"
       :loading="isLoading"
       @submit="handleCreate"
@@ -17,7 +17,7 @@
           <FontAwesomeIcon
             :icon="['fas', 'plus']"
             class="mr-1"
-          /> {{ $t('browserContext.add') }}
+          /> {{ $t('browser.add') }}
         </Button>
       </template>
       <template #body>
@@ -28,13 +28,13 @@
           >
             <FormItem>
               <Label :for="componentField.id || 'browser-context-name'">
-                {{ $t('browserContext.name') }}
+                {{ $t('browser.name') }}
               </Label>
               <FormControl>
                 <Input
                   :id="componentField.id || 'browser-context-name'"
                   type="text"
-                  :placeholder="$t('browserContext.namePlaceholder')"
+                  :placeholder="$t('browser.namePlaceholder')"
                   v-bind="componentField"
                 />
               </FormControl>

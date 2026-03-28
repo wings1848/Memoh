@@ -50,7 +50,7 @@
           class="space-y-2"
         >
           <Label :for="field.type === 'bool' || field.type === 'enum' ? undefined : `email-field-${field.key}`">
-            {{ $te(`emailProvider.fields.${field.key}`) ? $t(`emailProvider.fields.${field.key}`) : (field.title || field.key) }}
+            {{ $te(`email.fields.${field.key}`) ? $t(`email.fields.${field.key}`) : (field.title || field.key) }}
             <span
               v-if="!field.required"
               class="text-xs text-muted-foreground ml-1"
@@ -136,29 +136,29 @@
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="flex-1 min-w-[220px]">
             <p class="text-xs font-medium">
-              {{ $t('emailProvider.oauth.title') }}
+              {{ $t('email.oauth.title') }}
             </p>
             <p class="text-xs text-muted-foreground mt-0.5">
-              {{ $t('emailProvider.oauth.description') }}
+              {{ $t('email.oauth.description') }}
             </p>
             <p
               class="text-xs mt-2"
               :class="oauthTokenExpired ? 'text-destructive' : 'text-muted-foreground'"
             >
               <template v-if="oauthStatusLoading">
-                {{ $t('emailProvider.oauth.status.checking') }}
+                {{ $t('email.oauth.status.checking') }}
               </template>
               <template v-else-if="oauthStatus && !oauthStatus.configured">
-                {{ $t('emailProvider.oauth.status.notConfigured') }}
+                {{ $t('email.oauth.status.notConfigured') }}
               </template>
               <template v-else-if="oauthTokenExpired">
-                {{ $t('emailProvider.oauth.status.expired') }}
+                {{ $t('email.oauth.status.expired') }}
               </template>
               <template v-else-if="oauthStatus && oauthStatus.has_token">
-                {{ oauthStatus.email_address ? $t('emailProvider.oauth.status.authorized', { email: oauthStatus.email_address }) : $t('emailProvider.oauth.status.authorizedUnknown') }}
+                {{ oauthStatus.email_address ? $t('email.oauth.status.authorized', { email: oauthStatus.email_address }) : $t('email.oauth.status.authorizedUnknown') }}
               </template>
               <template v-else>
-                {{ $t('emailProvider.oauth.status.missing') }}
+                {{ $t('email.oauth.status.missing') }}
               </template>
             </p>
           </div>
@@ -174,7 +174,7 @@
                 :icon="['fas', 'key']"
                 class="mr-1.5"
               />
-              {{ $t('emailProvider.oauth.authorize') }}
+              {{ $t('email.oauth.authorize') }}
             </LoadingButton>
             <LoadingButton
               v-if="hasOAuthToken"
@@ -183,7 +183,7 @@
               :loading="revokeLoading"
               @click="handleRevoke"
             >
-              {{ $t('emailProvider.oauth.logout') }}
+              {{ $t('email.oauth.logout') }}
             </LoadingButton>
           </div>
         </div>
@@ -191,7 +191,7 @@
 
       <section class="flex justify-end mt-6 gap-4">
         <ConfirmPopover
-          :message="$t('emailProvider.deleteConfirm')"
+          :message="$t('email.deleteConfirm')"
           :loading="deleteLoading"
           @confirm="handleDelete"
         >
@@ -378,12 +378,12 @@ async function handleAuthorize() {
       path: { id: curProviderId.value },
     })
     if (error || !data?.auth_url) {
-      throw new Error(t('emailProvider.oauth.authorizeFailed'))
+      throw new Error(t('email.oauth.authorizeFailed'))
     }
     window.open(data.auth_url, '_blank', 'noopener,noreferrer')
-    toast.success(t('emailProvider.oauth.authorizeOpened'))
+    toast.success(t('email.oauth.authorizeOpened'))
   } catch (e: unknown) {
-    toast.error(e instanceof Error ? e.message : t('emailProvider.oauth.authorizeFailed'))
+    toast.error(e instanceof Error ? e.message : t('email.oauth.authorizeFailed'))
   } finally {
     authorizeLoading.value = false
   }
@@ -419,10 +419,10 @@ async function handleRevoke() {
       path: { id: curProviderId.value },
     })
     if (error) throw error
-    toast.success(t('emailProvider.oauth.logoutSuccess'))
+    toast.success(t('email.oauth.logoutSuccess'))
     await fetchOAuthStatus()
   } catch (error: unknown) {
-    toast.error(error instanceof Error ? error.message : t('emailProvider.oauth.logoutFailed'))
+    toast.error(error instanceof Error ? error.message : t('email.oauth.logoutFailed'))
   } finally {
     revokeLoading.value = false
   }

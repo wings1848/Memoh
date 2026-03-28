@@ -8,7 +8,7 @@
         />
         <div>
           <h2 class="text-sm font-semibold">
-            {{ curContext?.name || $t('browserContext.title') }}
+            {{ curContext?.name || $t('browser.title') }}
           </h2>
           <p class="text-xs text-muted-foreground">
             {{ curContext?.id }}
@@ -25,11 +25,11 @@
           name="name"
         >
           <FormItem>
-            <Label>{{ $t('browserContext.name') }}</Label>
+            <Label>{{ $t('browser.name') }}</Label>
             <FormControl>
               <Input
                 type="text"
-                :placeholder="$t('browserContext.namePlaceholder')"
+                :placeholder="$t('browser.namePlaceholder')"
                 v-bind="componentField"
               />
             </FormControl>
@@ -38,7 +38,7 @@
 
         <Separator class="my-4" />
         <h3 class="text-xs font-medium text-foreground">
-          {{ $t('browserContext.config') }}
+          {{ $t('browser.config') }}
         </h3>
 
         <FormField
@@ -46,7 +46,7 @@
           name="core"
         >
           <FormItem>
-            <Label>{{ $t('browserContext.core') }}</Label>
+            <Label>{{ $t('browser.core') }}</Label>
             <FormControl>
               <div class="flex gap-3">
                 <button
@@ -59,7 +59,7 @@
                     : 'border-border bg-card text-muted-foreground hover:bg-accent'"
                   @click="handleChange(c)"
                 >
-                  {{ $t(`browserContext.${c}`) }}
+                  {{ $t(`browser.${c}`) }}
                 </button>
               </div>
             </FormControl>
@@ -72,7 +72,7 @@
             name="viewportWidth"
           >
             <FormItem>
-              <Label>{{ $t('browserContext.viewportWidth') }}</Label>
+              <Label>{{ $t('browser.viewportWidth') }}</Label>
               <FormControl>
                 <Input
                   type="number"
@@ -87,7 +87,7 @@
             name="viewportHeight"
           >
             <FormItem>
-              <Label>{{ $t('browserContext.viewportHeight') }}</Label>
+              <Label>{{ $t('browser.viewportHeight') }}</Label>
               <FormControl>
                 <Input
                   type="number"
@@ -103,11 +103,11 @@
           name="userAgent"
         >
           <FormItem>
-            <Label>{{ $t('browserContext.userAgent') }}</Label>
+            <Label>{{ $t('browser.userAgent') }}</Label>
             <FormControl>
               <Input
                 type="text"
-                :placeholder="$t('browserContext.userAgentPlaceholder')"
+                :placeholder="$t('browser.userAgentPlaceholder')"
                 v-bind="componentField"
               />
             </FormControl>
@@ -120,7 +120,7 @@
             name="deviceScaleFactor"
           >
             <FormItem>
-              <Label>{{ $t('browserContext.deviceScaleFactor') }}</Label>
+              <Label>{{ $t('browser.deviceScaleFactor') }}</Label>
               <FormControl>
                 <Input
                   type="number"
@@ -136,11 +136,11 @@
             name="locale"
           >
             <FormItem>
-              <Label>{{ $t('browserContext.locale') }}</Label>
+              <Label>{{ $t('browser.locale') }}</Label>
               <FormControl>
                 <Input
                   type="text"
-                  :placeholder="$t('browserContext.localePlaceholder')"
+                  :placeholder="$t('browser.localePlaceholder')"
                   v-bind="componentField"
                 />
               </FormControl>
@@ -153,11 +153,11 @@
           name="timezoneId"
         >
           <FormItem>
-            <Label>{{ $t('browserContext.timezoneId') }}</Label>
+            <Label>{{ $t('browser.timezoneId') }}</Label>
             <FormControl>
               <TimezoneSelect
                 :model-value="value || emptyTimezoneValue"
-                :placeholder="$t('browserContext.timezonePlaceholder')"
+                :placeholder="$t('browser.timezonePlaceholder')"
                 allow-empty
                 :empty-label="$t('common.optional')"
                 @update:model-value="(val) => handleChange(val === emptyTimezoneValue ? '' : val)"
@@ -178,7 +178,7 @@
                   @update:model-value="handleChange"
                 />
               </FormControl>
-              <Label class="mt-0!">{{ $t('browserContext.isMobile') }}</Label>
+              <Label class="mt-0!">{{ $t('browser.isMobile') }}</Label>
             </FormItem>
           </FormField>
 
@@ -193,7 +193,7 @@
                   @update:model-value="handleChange"
                 />
               </FormControl>
-              <Label class="mt-0!">{{ $t('browserContext.ignoreHTTPSErrors') }}</Label>
+              <Label class="mt-0!">{{ $t('browser.ignoreHTTPSErrors') }}</Label>
             </FormItem>
           </FormField>
         </div>
@@ -203,7 +203,7 @@
 
       <div class="flex gap-2 items-center justify-between">
         <ConfirmPopover
-          :title="$t('browserContext.deleteConfirm')"
+          :title="$t('browser.deleteConfirm')"
           :confirm-text="$t('common.delete')"
           @confirm="handleDelete"
         >
@@ -363,7 +363,7 @@ const handleSave = form.handleSubmit(async (values) => {
     () => updateMutation({ id, name: values.name, config }),
     {
       fallbackMessage: t('common.saveFailed'),
-      onSuccess: () => toast.success(t('browserContext.saveSuccess')),
+      onSuccess: () => toast.success(t('browser.saveSuccess')),
     },
   )
 })
@@ -373,7 +373,7 @@ async function handleDelete() {
   if (!id) return
   try {
     await deleteMutation(id)
-    toast.success(t('browserContext.deleteSuccess'))
+    toast.success(t('browser.deleteSuccess'))
   } catch (err) {
     toast.error(resolveApiErrorMessage(err, t('common.deleteFailed')))
   }

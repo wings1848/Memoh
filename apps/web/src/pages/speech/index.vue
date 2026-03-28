@@ -103,8 +103,8 @@ const openStatus = reactive({ addOpen: false })
             <FontAwesomeIcon :icon="['fas', 'volume-high']" />
           </EmptyMedia>
         </EmptyHeader>
-        <EmptyTitle>{{ $t('ttsProvider.emptyTitle') }}</EmptyTitle>
-        <EmptyDescription>{{ $t('ttsProvider.emptyDescription') }}</EmptyDescription>
+        <EmptyTitle>{{ $t('speech.emptyTitle') }}</EmptyTitle>
+        <EmptyDescription>{{ $t('speech.emptyDescription') }}</EmptyDescription>
         <EmptyContent>
           <Button
             variant="outline"
@@ -113,7 +113,7 @@ const openStatus = reactive({ addOpen: false })
             <FontAwesomeIcon
               :icon="['fas', 'plus']"
               class="mr-1"
-            /> {{ $t('ttsProvider.add') }}
+            /> {{ $t('speech.add') }}
           </Button>
         </EmptyContent>
       </Empty>

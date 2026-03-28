@@ -1,16 +1,16 @@
 <template>
   <FormDialogShell
     v-model:open="open"
-    :title="$t('ttsProvider.addModel')"
+    :title="$t('speech.addModel')"
     :cancel-text="$t('common.cancel')"
-    :submit-text="$t('ttsProvider.addModel')"
+    :submit-text="$t('speech.addModel')"
     :submit-disabled="(form.meta.value.valid === false) || isLoading"
     :loading="isLoading"
     @submit="handleCreate"
   >
     <template #trigger>
       <Button variant="default">
-        {{ $t('ttsProvider.addModel') }}
+        {{ $t('speech.addModel') }}
       </Button>
     </template>
     <template #body>
@@ -21,13 +21,13 @@
         >
           <FormItem>
             <Label :for="componentField.id || 'tts-model-id'">
-              {{ $t('ttsProvider.modelId') }}
+              {{ $t('speech.modelId') }}
             </Label>
             <FormControl>
               <Input
                 :id="componentField.id || 'tts-model-id'"
                 type="text"
-                :placeholder="$t('ttsProvider.modelIdPlaceholder')"
+                :placeholder="$t('speech.modelIdPlaceholder')"
                 v-bind="componentField"
               />
             </FormControl>

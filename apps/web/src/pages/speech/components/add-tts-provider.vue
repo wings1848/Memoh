@@ -2,9 +2,9 @@
   <section>
     <FormDialogShell
       v-model:open="open"
-      :title="$t('emailProvider.add')"
+      :title="$t('speech.add')"
       :cancel-text="$t('common.cancel')"
-      :submit-text="$t('emailProvider.add')"
+      :submit-text="$t('speech.add')"
       :submit-disabled="(form.meta.value.valid === false) || isLoading"
       :loading="isLoading"
       @submit="handleCreate"
@@ -17,7 +17,7 @@
           <FontAwesomeIcon
             :icon="['fas', 'plus']"
             class="mr-1"
-          /> {{ $t('emailProvider.add') }}
+          /> {{ $t('speech.add') }}
         </Button>
       </template>
       <template #body>
@@ -27,12 +27,12 @@
             name="name"
           >
             <FormItem>
-              <Label :for="componentField.id || 'email-provider-name'">
+              <Label :for="componentField.id || 'tts-provider-name'">
                 {{ $t('common.name') }}
               </Label>
               <FormControl>
                 <Input
-                  :id="componentField.id || 'email-provider-name'"
+                  :id="componentField.id || 'tts-provider-name'"
                   type="text"
                   :placeholder="$t('common.namePlaceholder')"
                   v-bind="componentField"
@@ -45,13 +45,13 @@
             name="provider"
           >
             <FormItem>
-              <Label :for="componentField.id || 'email-provider-type'">
-                {{ $t('emailProvider.providerType') }}
+              <Label :for="componentField.id || 'tts-provider-type'">
+                {{ $t('speech.providerType') }}
               </Label>
               <FormControl>
                 <Select v-bind="componentField">
                   <SelectTrigger
-                    :id="componentField.id || 'email-provider-type'"
+                    :id="componentField.id || 'tts-provider-type'"
                     class="w-full"
                   >
                     <SelectValue :placeholder="$t('common.typePlaceholder')" />
@@ -96,8 +96,8 @@ import { toTypedSchema } from '@vee-validate/zod'
 import z from 'zod'
 import { useForm } from 'vee-validate'
 import { useMutation, useQuery, useQueryCache } from '@pinia/colada'
-import { postEmailProviders, getEmailProvidersMeta } from '@memohai/sdk'
-import type { EmailCreateProviderRequest } from '@memohai/sdk'
+import { postTtsProviders, getTtsProvidersMeta } from '@memohai/sdk'
+import type { TtsCreateProviderRequest } from '@memohai/sdk'
 import { useI18n } from 'vue-i18n'
 import FormDialogShell from '@/components/form-dialog-shell/index.vue'
 import { useDialogMutation } from '@/composables/useDialogMutation'
@@ -107,9 +107,9 @@ const { t } = useI18n()
 const { run } = useDialogMutation()
 
 const { data: providerMetas } = useQuery({
-  key: () => ['email-providers-meta'],
+  key: () => ['tts-providers-meta'],
   query: async () => {
-    const { data } = await getEmailProvidersMeta({ throwOnError: true })
+    const { data } = await getTtsProvidersMeta({ throwOnError: true })
     return data
   },
 })
@@ -117,10 +117,10 @@ const { data: providerMetas } = useQuery({
 const queryCache = useQueryCache()
 const { mutateAsync: createMutation, isLoading } = useMutation({
   mutation: async (data: Record<string, unknown>) => {
-    const { data: result } = await postEmailProviders({ body: data as EmailCreateProviderRequest, throwOnError: true })
+    const { data: result } = await postTtsProviders({ body: data as TtsCreateProviderRequest, throwOnError: true })
     return result
   },
-  onSettled: () => queryCache.invalidateQueries({ key: ['email-providers'] }),
+  onSettled: () => queryCache.invalidateQueries({ key: ['tts-providers'] }),
 })
 
 const schema = toTypedSchema(z.object({

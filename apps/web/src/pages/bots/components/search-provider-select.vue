@@ -4,9 +4,9 @@
     :options="options"
     :placeholder="placeholder || ''"
     :aria-label="placeholder || 'Select search provider'"
-    :search-placeholder="$t('searchProvider.searchPlaceholder')"
+    :search-placeholder="$t('webSearch.searchPlaceholder')"
     search-aria-label="Search providers"
-    :empty-text="$t('searchProvider.empty')"
+    :empty-text="$t('webSearch.empty')"
     :show-group-headers="false"
   >
     <template #trigger="{ open, displayLabel }">

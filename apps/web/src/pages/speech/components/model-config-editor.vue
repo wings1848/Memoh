@@ -3,7 +3,7 @@
     <template v-if="caps">
       <!-- Language -->
       <div class="space-y-2">
-        <Label for="tts-lang">{{ $t('ttsProvider.fields.language') }}</Label>
+        <Label for="tts-lang">{{ $t('speech.fields.language') }}</Label>
         <Select
           :model-value="configData.voice_lang ?? ''"
           @update:model-value="onLangChange"
@@ -12,7 +12,7 @@
             id="tts-lang"
             class="w-full"
           >
-            <SelectValue :placeholder="$t('ttsProvider.fields.languagePlaceholder')" />
+            <SelectValue :placeholder="$t('speech.fields.languagePlaceholder')" />
           </SelectTrigger>
           <SelectContent class="max-h-60">
             <SelectItem
@@ -28,7 +28,7 @@
 
       <!-- Voice -->
       <div class="space-y-2">
-        <Label for="tts-voice">{{ $t('ttsProvider.fields.voice') }}</Label>
+        <Label for="tts-voice">{{ $t('speech.fields.voice') }}</Label>
         <Select
           :model-value="configData.voice_id ?? ''"
           @update:model-value="(val) => configData.voice_id = val"
@@ -37,7 +37,7 @@
             id="tts-voice"
             class="w-full"
           >
-            <SelectValue :placeholder="$t('ttsProvider.fields.voicePlaceholder')" />
+            <SelectValue :placeholder="$t('speech.fields.voicePlaceholder')" />
           </SelectTrigger>
           <SelectContent class="max-h-60">
             <SelectItem
@@ -56,7 +56,7 @@
         v-if="caps.formats && caps.formats.length > 0"
         class="space-y-2"
       >
-        <Label for="tts-format">{{ $t('ttsProvider.fields.format') }}</Label>
+        <Label for="tts-format">{{ $t('speech.fields.format') }}</Label>
         <Select
           :model-value="configData.format ?? ''"
           @update:model-value="(val) => configData.format = val"
@@ -65,7 +65,7 @@
             id="tts-format"
             class="w-full"
           >
-            <SelectValue :placeholder="$t('ttsProvider.fields.formatPlaceholder')" />
+            <SelectValue :placeholder="$t('speech.fields.formatPlaceholder')" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem
@@ -84,9 +84,9 @@
         v-if="caps.speed"
         class="space-y-2"
       >
-        <Label>{{ $t('ttsProvider.fields.speed') }}</Label>
+        <Label>{{ $t('speech.fields.speed') }}</Label>
         <p class="text-xs text-muted-foreground">
-          {{ $t('ttsProvider.fields.speedDescription', { default: caps.speed.default ?? 1 }) }}
+          {{ $t('speech.fields.speedDescription', { default: caps.speed.default ?? 1 }) }}
         </p>
         <div v-if="caps.speed.options && caps.speed.options.length > 0">
           <Select
@@ -130,9 +130,9 @@
         v-if="caps.pitch"
         class="space-y-2"
       >
-        <Label>{{ $t('ttsProvider.fields.pitch') }}</Label>
+        <Label>{{ $t('speech.fields.pitch') }}</Label>
         <p class="text-xs text-muted-foreground">
-          {{ $t('ttsProvider.fields.pitchDescription', { default: caps.pitch.default ?? 0 }) }}
+          {{ $t('speech.fields.pitchDescription', { default: caps.pitch.default ?? 0 }) }}
         </p>
         <div
           v-if="caps.pitch.options && caps.pitch.options.length > 0"
@@ -178,7 +178,7 @@
       v-else
       class="text-xs text-muted-foreground"
     >
-      {{ $t('ttsProvider.noCapabilities') }}
+      {{ $t('speech.noCapabilities') }}
     </div>
 
     <Separator class="my-3" />
@@ -186,12 +186,12 @@
     <!-- Test Synthesis -->
     <div class="space-y-3">
       <h4 class="text-xs font-medium">
-        {{ $t('ttsProvider.test.title') }}
+        {{ $t('speech.test.title') }}
       </h4>
       <div class="relative">
         <Textarea
           v-model="testText"
-          :placeholder="$t('ttsProvider.test.placeholder')"
+          :placeholder="$t('speech.test.placeholder')"
           :maxlength="maxTestTextLen"
           rows="2"
           class="resize-none"
@@ -213,7 +213,7 @@
             :icon="['fas', 'play']"
             class="mr-1.5"
           />
-          {{ $t('ttsProvider.test.generate') }}
+          {{ $t('speech.test.generate') }}
         </LoadingButton>
         <span
           v-if="testError"
@@ -398,7 +398,7 @@ async function handleTest() {
     await new Promise<void>((resolve) => setTimeout(resolve, 50))
     audioEl.value?.play()
   } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : t('ttsProvider.test.failed')
+    const msg = e instanceof Error ? e.message : t('speech.test.failed')
     testError.value = msg
     toast.error(msg)
   } finally {

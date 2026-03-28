@@ -4,9 +4,9 @@
     :options="options"
     :placeholder="placeholder || ''"
     :aria-label="placeholder || 'Select TTS model'"
-    :search-placeholder="$t('ttsProvider.searchPlaceholder')"
+    :search-placeholder="$t('speech.searchPlaceholder')"
     search-aria-label="Search TTS models"
-    :empty-text="$t('ttsProvider.emptyTitle')"
+    :empty-text="$t('speech.emptyTitle')"
   >
     <template #trigger="{ open, displayLabel }">
       <Button

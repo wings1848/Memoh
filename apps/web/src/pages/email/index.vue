@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, provide, watch, reactive } from 'vue'
-import { useQuery } from '@pinia/colada'
+import { useQuery} from '@pinia/colada'
 import {
+  Button,
   ScrollArea,
   SidebarMenu,
   SidebarMenuButton,
@@ -13,40 +14,46 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-  Button
 } from '@memohai/ui'
-import { getMemoryProviders } from '@memohai/sdk'
-import type { MemoryprovidersGetResponse } from '@memohai/sdk'
-import AddMemoryProvider from './components/add-memory-provider.vue'
+import { getEmailProviders } from '@memohai/sdk'
+import type { EmailProviderResponse } from '@memohai/sdk'
+import AddEmailProvider from './components/add-email-provider.vue'
 import ProviderSetting from './components/provider-setting.vue'
 import MasterDetailSidebarLayout from '@/components/master-detail-sidebar-layout/index.vue'
 
 const { data: providerData } = useQuery({
-  key: () => ['memory-providers'],
+  key: () => ['email-providers'],
   query: async () => {
-    const { data } = await getMemoryProviders({ throwOnError: true })
+    const { data } = await getEmailProviders({ throwOnError: true })
     return data
   },
 })
+const curProvider = ref<EmailProviderResponse>()
+provide('curEmailProvider', curProvider)
 
-const curProvider = ref<MemoryprovidersGetResponse>()
-provide('curMemoryProvider', curProvider)
-
-const selectProvider = (value: string) => computed(() => {
-  return curProvider.value?.name === value
+const selectProvider = (name: string) => computed(() => {
+  return curProvider.value?.name === name
 })
 
-const curFilterProvider = computed(() => {
+const filteredProviders = computed(() => {
   if (!Array.isArray(providerData.value)) return []
   return providerData.value
 })
 
-watch(curFilterProvider, () => {
-  if (curFilterProvider.value.length > 0) {
-    curProvider.value = curFilterProvider.value[0]
-  } else {
-    curProvider.value = undefined
+watch(filteredProviders, (list) => {
+  if (!list || list.length === 0) {
+    curProvider.value = { id: '' }
+    return
   }
+  const currentId = curProvider.value?.id
+  if (currentId) {
+    const stillExists = list.find((p: EmailProviderResponse) => p.id === currentId)
+    if (stillExists) {
+      curProvider.value = stillExists
+      return
+    }
+  }
+  curProvider.value = list[0]
 }, { immediate: true })
 
 const openStatus = reactive({ addOpen: false })
@@ -56,7 +63,7 @@ const openStatus = reactive({ addOpen: false })
   <MasterDetailSidebarLayout>
     <template #sidebar-content>
       <SidebarMenu
-        v-for="item in curFilterProvider"
+        v-for="item in filteredProviders"
         :key="item.id"
       >
         <SidebarMenuItem>
@@ -65,14 +72,10 @@ const openStatus = reactive({ addOpen: false })
             class="justify-start py-5! px-4"
           >
             <Toggle
-              :class="`py-4 border border-transparent ${curProvider?.id === item.id ? 'border-inherit' : ''}`"
-              :model-value="selectProvider(item.name).value"
+              :class="['py-4 border', curProvider?.id === item.id ? 'border-border' : 'border-transparent']"
+              :model-value="selectProvider(item.name ?? '').value"
               @update:model-value="(isSelect) => { if (isSelect) curProvider = item }"
             >
-              <FontAwesomeIcon
-                :icon="['fas', 'brain']"
-                class="mr-2 size-4 text-primary"
-              />
               {{ item.name }}
             </Toggle>
           </SidebarMenuButton>
@@ -81,7 +84,7 @@ const openStatus = reactive({ addOpen: false })
     </template>
 
     <template #sidebar-footer>
-      <AddMemoryProvider v-model:open="openStatus.addOpen" />
+      <AddEmailProvider v-model:open="openStatus.addOpen" />
     </template>
 
     <template #detail>
@@ -97,22 +100,20 @@ const openStatus = reactive({ addOpen: false })
       >
         <EmptyHeader>
           <EmptyMedia variant="icon">
-            <FontAwesomeIcon :icon="['fas', 'brain']" />
+            <FontAwesomeIcon :icon="['fas', 'envelope']" />
           </EmptyMedia>
         </EmptyHeader>
-        <EmptyTitle>{{ $t('memoryProvider.emptyTitle') }}</EmptyTitle>
-        <EmptyDescription>{{ $t('memoryProvider.emptyDescription') }}</EmptyDescription>
-        <EmptyContent>        
+        <EmptyTitle>{{ $t('email.emptyTitle') }}</EmptyTitle>
+        <EmptyDescription>{{ $t('email.emptyDescription') }}</EmptyDescription>
+        <EmptyContent>
           <Button
             variant="outline"
-            class="w-full"
-            @click="openStatus.addOpen=true"
+            @click="openStatus.addOpen = true"
           >
             <FontAwesomeIcon
               :icon="['fas', 'plus']"
-              class="mr-2"
-            />
-            {{ $t('memoryProvider.add') }}
+              class="mr-1"
+            /> {{ $t('email.add') }}
           </Button>
         </EmptyContent>
       </Empty>

@@ -4,9 +4,9 @@
     :options="options"
     :placeholder="placeholder || ''"
     :aria-label="placeholder || 'Select memory provider'"
-    :search-placeholder="$t('memoryProvider.searchPlaceholder')"
+    :search-placeholder="$t('memory.searchPlaceholder')"
     search-aria-label="Search memory providers"
-    :empty-text="$t('memoryProvider.empty')"
+    :empty-text="$t('memory.empty')"
     :show-group-headers="false"
   >
     <template #trigger="{ open, displayLabel }">
@@ -83,7 +83,7 @@ const options = computed<SearchableSelectOption[]>(() => {
     value: provider.id || '',
     label: provider.name || provider.id || '',
     description: provider.provider === 'builtin'
-      ? t(`memoryProvider.modeNames.${provider.config?.memory_mode || 'off'}`)
+      ? t(`memory.modeNames.${provider.config?.memory_mode || 'off'}`)
       : provider.provider,
     keywords: [
       provider.name ?? '',

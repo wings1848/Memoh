@@ -276,7 +276,7 @@ const tabList = computed(() => {
     {
       value: 'overview', label: 'bots.tabs.overview', component: BotOverview, params: {}
     },
-    { value: 'settings', label: 'bots.tabs.general', component: BotSettings, params: { 'bot-id': bot_id, 'bot-type': bot.value?.type } },
+    { value: 'general', label: 'bots.tabs.general', component: BotSettings, params: { 'bot-id': bot_id, 'bot-type': bot.value?.type } },
     { value: 'container', label: 'bots.tabs.container', component: BotContainer, params: {} },
     { value: 'memory', label: 'bots.tabs.memory', component: BotMemory, params: { 'bot-id': bot_id } },
     { value: 'channels', label: 'bots.tabs.channels', component: BotChannels, params: { 'bot-id': bot_id } },
