@@ -122,14 +122,16 @@ import {
   SidebarMenuItem,
 } from '@memohai/ui'
 import BotItem from './bot-item.vue'
+import { usePinnedBots } from '@/composables/usePinnedBots'
 
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
 // const { userInfo } = useUserStore()
+const { sortBots } = usePinnedBots()
 
 const { data: botData, isLoading } = useQuery(getBotsQuery())
-const bots = computed<BotsBot[]>(() => botData.value?.items ?? [])
+const bots = computed<BotsBot[]>(() => sortBots(botData.value?.items ?? []))
 
 const isSettingsActive = computed(() => route.path.startsWith('/settings'))
 

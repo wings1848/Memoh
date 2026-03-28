@@ -5,7 +5,7 @@
   >
     <button
       :class="[
-        'flex items-center gap-2.5 w-full h-[38px] px-2.5 rounded-lg transition-colors',
+        'group/bot flex items-center gap-2.5 w-full h-[38px] px-2.5 rounded-lg transition-colors',
         isActive
           ? 'bg-background'
           : bot.status === 'error'
@@ -29,9 +29,45 @@
           {{ avatarFallback }}
         </span>
       </div>
-      <span class="truncate text-xs font-medium text-foreground leading-[18px]">
+      <span class="truncate text-xs font-medium text-foreground leading-[18px] flex-1 text-left">
         {{ bot.display_name || bot.id }}
       </span>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          as-child
+          @click.stop
+        >
+          <span
+            class="shrink-0 size-6 flex items-center justify-center rounded text-muted-foreground opacity-0 group-hover/bot:opacity-100 hover:text-foreground hover:bg-accent transition-opacity"
+          >
+            <FontAwesomeIcon
+              :icon="['fas', 'ellipsis']"
+              class="size-3"
+            />
+          </span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="start"
+          side="bottom"
+          @click.stop
+        >
+          <DropdownMenuItem @click.stop="handleTogglePin">
+            <FontAwesomeIcon
+              :icon="['fas', 'thumbtack']"
+              class="size-3 mr-2"
+            />
+            {{ pinned ? $t('common.unpin') : $t('common.pin') }}
+          </DropdownMenuItem>
+          <DropdownMenuItem @click.stop="handleDetails">
+            <FontAwesomeIcon
+              :icon="['fas', 'gear']"
+              class="size-3 mr-2"
+            />
+            {{ $t('common.details') }}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </button>
   </SidebarMenuButton>
 </template>
@@ -43,22 +79,39 @@ import { useRouter } from 'vue-router'
 import type { BotsBot } from '@memohai/sdk'
 import { useChatStore } from '@/store/chat-list'
 import { useAvatarInitials } from '@/composables/useAvatarInitials'
-import { SidebarMenuButton } from '@memohai/ui'
+import { usePinnedBots } from '@/composables/usePinnedBots'
+import {
+  SidebarMenuButton,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@memohai/ui'
 
 const props = defineProps<{ bot: BotsBot }>()
 
 const router = useRouter()
 const chatStore = useChatStore()
 const { currentBotId } = storeToRefs(chatStore)
+const { isPinned, togglePin } = usePinnedBots()
 
 const displayName = computed(() => props.bot.display_name || props.bot.id || '')
 const avatarFallback = useAvatarInitials(() => displayName.value, 'B')
 
 const isActive = computed(() => currentBotId.value === props.bot.id)
+const pinned = computed(() => isPinned(props.bot.id ?? ''))
 
 function handleSelect() {
   if (props.bot.status === 'error') return
   chatStore.selectBot(props.bot.id ?? '')
   router.push({ name: 'chat', params: { botId: props.bot.id } })
+}
+
+function handleDetails() {
+  router.push({ name: 'bot-detail', params: { botId: props.bot.id } })
+}
+
+function handleTogglePin() {
+  togglePin(props.bot.id ?? '')
 }
 </script>

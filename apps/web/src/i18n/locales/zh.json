@@ -36,7 +36,10 @@
     "createdAt": "创建时间",
     "none": "无",
     "yes": "是",
-    "no": "否"
+    "no": "否",
+    "details": "详情",
+    "pin": "置顶",
+    "unpin": "取消置顶"
   },
   "auth": {
     "welcome": "欢迎回来",

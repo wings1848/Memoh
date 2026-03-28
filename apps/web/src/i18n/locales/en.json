@@ -36,7 +36,10 @@
     "createdAt": "Created at",
     "none": "None",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "details": "Details",
+    "pin": "Pin",
+    "unpin": "Unpin"
   },
   "auth": {
     "welcome": "Welcome Back",
