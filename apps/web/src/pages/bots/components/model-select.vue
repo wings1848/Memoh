@@ -7,14 +7,32 @@
     :search-placeholder="$t('bots.settings.searchModel')"
     search-aria-label="Search models"
     :empty-text="$t('bots.settings.noModel')"
-  />
+  >
+    <template #option-suffix="{ option }">
+      <span class="ml-auto flex items-center gap-1.5">
+        <ModelCapabilities
+          v-if="optionMeta(option)?.compatibilities?.length"
+          :compatibilities="optionMeta(option)!.compatibilities!"
+        />
+        <ContextWindowBadge :context-window="optionMeta(option)?.context_window" />
+        <span
+          v-if="option.description"
+          class="text-xs text-muted-foreground"
+        >
+          {{ option.description }}
+        </span>
+      </span>
+    </template>
+  </SearchableSelectPopover>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ModelsGetResponse, ProvidersGetResponse } from '@memohai/sdk'
+import type { ModelsGetResponse, ModelsModelConfig, ProvidersGetResponse } from '@memohai/sdk'
 import SearchableSelectPopover from '@/components/searchable-select-popover/index.vue'
 import type { SearchableSelectOption } from '@/components/searchable-select-popover/index.vue'
+import ModelCapabilities from '@/components/model-capabilities/index.vue'
+import ContextWindowBadge from '@/components/context-window-badge/index.vue'
 
 const props = defineProps<{
   models: ModelsGetResponse[]
@@ -37,6 +55,10 @@ const providerMap = computed(() => {
   return map
 })
 
+function optionMeta(option: SearchableSelectOption): ModelsModelConfig | undefined {
+  return option.meta as ModelsModelConfig | undefined
+}
+
 const options = computed<SearchableSelectOption[]>(() =>
   typeFilteredModels.value.map((model) => {
     const providerId = model.llm_provider_id
@@ -47,6 +69,7 @@ const options = computed<SearchableSelectOption[]>(() =>
       group: providerId,
       groupLabel: providerMap.value.get(providerId) ?? providerId,
       keywords: [model.model_id, model.name ?? ''],
+      meta: model.config,
     }
   }),
 )
