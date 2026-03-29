@@ -129,8 +129,7 @@
       class="flex flex-col items-center justify-center py-12 text-center"
     >
       <div class="rounded-full bg-muted p-3 mb-4">
-        <FontAwesomeIcon
-          :icon="['fas', 'compress']"
+        <Minimize2
           class="size-6 text-muted-foreground"
         />
       </div>
@@ -231,6 +230,7 @@
 </template>
 
 <script setup lang="ts">
+import { Minimize2 } from 'lucide-vue-next'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'

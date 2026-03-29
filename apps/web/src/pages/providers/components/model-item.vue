@@ -61,7 +61,7 @@
         :aria-label="$t('models.testModel')"
         @click="runTest"
       >
-        <FontAwesomeIcon :icon="['fas', 'rotate']" />
+        <RefreshCw />
       </Button>
 
       <Button
@@ -71,7 +71,7 @@
         :aria-label="$t('common.edit')"
         @click="$emit('edit', model)"
       >
-        <FontAwesomeIcon :icon="['fas', 'gear']" />
+        <Settings />
       </Button>
 
       <ConfirmPopover
@@ -85,7 +85,7 @@
             variant="outline"
             :aria-label="$t('common.delete')"
           >
-            <FontAwesomeIcon :icon="['far', 'trash-can']" />
+            <Trash2 />
           </Button>
         </template>
       </ConfirmPopover>
@@ -104,6 +104,7 @@ import {
   Button,
   Spinner,
 } from '@memohai/ui'
+import { RefreshCw, Settings, Trash2 } from 'lucide-vue-next'
 import ConfirmPopover from '@/components/confirm-popover/index.vue'
 import { postModelsByIdTest } from '@memohai/sdk'
 import type { ModelsGetResponse, ModelsTestResponse } from '@memohai/sdk'

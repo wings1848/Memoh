@@ -52,8 +52,7 @@
                 v-if="loadingOlder"
                 class="flex justify-center py-2"
               >
-                <FontAwesomeIcon
-                  :icon="['fas', 'spinner']"
+                <LoaderCircle
                   class="size-3.5 animate-spin text-muted-foreground"
                 />
               </div>
@@ -101,8 +100,8 @@
               :key="i"
               class="relative group flex items-center gap-1.5 px-2 py-1 rounded-md border bg-muted/40 text-xs"
             >
-              <FontAwesomeIcon
-                :icon="['fas', file.type.startsWith('image/') ? 'image' : 'file']"
+              <component
+                :is="file.type.startsWith('image/') ? ImageIcon : FileIcon"
                 class="size-3 text-muted-foreground"
               />
               <span class="truncate max-w-30">{{ file.name }}</span>
@@ -112,8 +111,7 @@
                 :aria-label="`${$t('common.delete')}: ${file.name}`"
                 @click="pendingFiles.splice(i, 1)"
               >
-                <FontAwesomeIcon
-                  :icon="['fas', 'xmark']"
+                <X
                   class="size-3"
                 />
               </button>
@@ -144,8 +142,7 @@
                   aria-label="Attach files"
                   @click="fileInput?.click()"
                 >
-                  <FontAwesomeIcon
-                    :icon="['fas', 'paperclip']"
+                  <Paperclip
                     class="size-3.5"
                   />
                 </Button>
@@ -157,8 +154,7 @@
                   :aria-label="$t('chat.files')"
                   @click="fileManagerOpen = true"
                 >
-                  <FontAwesomeIcon
-                    :icon="['fas', 'folder-open']"
+                  <FolderOpen
                     class="size-3.5"
                   />
                 </Button>
@@ -171,8 +167,7 @@
                   class="ml-auto bg-[#8B56E3]"
                   @click="handleSend"
                 >
-                  <FontAwesomeIcon
-                    :icon="['fas', 'paper-plane']"
+                  <Send
                     class="size-2"
                   />
                   {{ $t('chat.send') }}
@@ -186,8 +181,7 @@
                   aria-label="Stop generating response"
                   @click="chatStore.abort()"
                 >
-                  <FontAwesomeIcon
-                    :icon="['fas', 'spinner']"
+                  <LoaderCircle
                     class="size-3.5 animate-spin"
                   />
                 </Button>
@@ -225,6 +219,7 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, provide, useTemplateRef, watchEffect} from 'vue'
+import { LoaderCircle, Image as ImageIcon, File as FileIcon, X, Paperclip, FolderOpen, Send } from 'lucide-vue-next'
 import { ScrollArea, Button, InputGroup, InputGroupAddon, InputGroupTextarea, Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription,Separator } from '@memohai/ui'
 import { useChatStore } from '@/store/chat-list'
 import { storeToRefs } from 'pinia'

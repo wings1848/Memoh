@@ -36,8 +36,7 @@
     <div class="p-2 shrink-0">
       <InputGroup class="h-[30px]">
         <InputGroupAddon class="pl-2.5">
-          <FontAwesomeIcon
-            :icon="['fas', 'magnifying-glass']"
+          <Search
             class="size-[11px] text-muted-foreground"
           />
         </InputGroupAddon>
@@ -56,8 +55,7 @@
         :disabled="!currentBotId"
         @click="handleNewSession"
       >
-        <FontAwesomeIcon
-          :icon="['fas', 'plus']"
+        <Plus
           class="size-3"
         />
         {{ t('chat.newSession') }}
@@ -68,15 +66,13 @@
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <button class="flex items-center gap-1">
-            <FontAwesomeIcon
-              :icon="['fas', 'browser']"
+            <Globe
               class="size-2.5 text-muted-foreground"
             />
             <span class="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.7px]">
               {{ t('chat.sessionSourcePrefix') }}{{ filterLabel }}
             </span>
-            <FontAwesomeIcon
-              :icon="['fas', 'chevron-down']"
+            <ChevronDown
               class="size-2.5 text-muted-foreground"
             />
           </button>
@@ -87,9 +83,8 @@
             :key="opt.value ?? 'all'"
             @click="filterType = opt.value"
           >
-            <FontAwesomeIcon
+            <Check
               v-if="filterType === opt.value"
-              :icon="['fas', 'check']"
               class="size-3 mr-2"
             />
             <span :class="filterType !== opt.value ? 'ml-5' : ''">
@@ -124,8 +119,7 @@
             v-if="loadingChats"
             class="flex justify-center py-4"
           >
-            <FontAwesomeIcon
-              :icon="['fas', 'spinner']"
+            <LoaderCircle
               class="size-4 animate-spin text-muted-foreground"
             />
           </div>
@@ -137,6 +131,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { Search, Plus, Globe, ChevronDown, Check, LoaderCircle } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'

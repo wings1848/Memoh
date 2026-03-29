@@ -19,8 +19,7 @@
         class="shadow-none mb-4"
       >
         <InputGroupAddon align="inline-start">
-          <FontAwesomeIcon
-            :icon="['fas', 'magnifying-glass']"
+          <Search
             class="text-muted-foreground"
           />
         </InputGroupAddon>
@@ -64,7 +63,7 @@
       >
         <EmptyHeader>
           <EmptyMedia variant="icon">
-            <FontAwesomeIcon :icon="['fas', 'magnifying-glass']" />
+            <Search />
           </EmptyMedia>
         </EmptyHeader>
         <EmptyTitle>{{ $t('models.searchNoResults') }}</EmptyTitle>
@@ -77,7 +76,7 @@
     >
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <FontAwesomeIcon :icon="['far', 'rectangle-list']" />
+          <List />
         </EmptyMedia>
       </EmptyHeader>
       <EmptyTitle>{{ $t('models.emptyTitle') }}</EmptyTitle>
@@ -101,6 +100,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from '@memohai/ui'
+import { Search, List } from 'lucide-vue-next'
 import CreateModel from '@/components/create-model/index.vue'
 import ImportModelsDialog from '@/components/import-models-dialog/index.vue'
 import ModelItem from './model-item.vue'

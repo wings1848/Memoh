@@ -2,8 +2,7 @@
   <div class="p-4">
     <section class="flex justify-between items-center">
       <div class="flex items-center gap-2">
-        <FontAwesomeIcon
-          :icon="['fas', 'window-maximize']"
+        <AppWindow
           class="size-5"
         />
         <div>
@@ -212,7 +211,7 @@
               variant="outline"
               :aria-label="$t('common.delete')"
             >
-              <FontAwesomeIcon :icon="['far', 'trash-can']" />
+              <Trash2 />
             </Button>
           </template>
         </ConfirmPopover>
@@ -252,6 +251,7 @@ import { useDialogMutation } from '@/composables/useDialogMutation'
 import ConfirmPopover from '@/components/confirm-popover/index.vue'
 import LoadingButton from '@/components/loading-button/index.vue'
 import { resolveApiErrorMessage } from '@/utils/api-error'
+import { AppWindow, Trash2 } from 'lucide-vue-next'
 import { emptyTimezoneValue } from '@/utils/timezones'
 import TimezoneSelect from '@/components/timezone-select/index.vue'
 
