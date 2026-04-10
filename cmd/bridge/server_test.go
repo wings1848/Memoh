@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 
 	pb "github.com/memohai/memoh/internal/workspace/bridgepb"
 )
@@ -23,11 +24,11 @@ func newCancelOnStdoutExecStream() *cancelOnStdoutExecStream {
 }
 
 func (s *cancelOnStdoutExecStream) Send(msg *pb.ExecOutput) error {
-	clone := *msg
+	clone := proto.Clone(msg).(*pb.ExecOutput)
 	if len(msg.GetData()) > 0 {
 		clone.Data = append([]byte(nil), msg.GetData()...)
 	}
-	s.outputs = append(s.outputs, &clone)
+	s.outputs = append(s.outputs, clone)
 	if !s.canceled && msg.GetStream() == pb.ExecOutput_STDOUT && len(msg.GetData()) > 0 {
 		s.canceled = true
 		s.cancel()
