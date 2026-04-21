@@ -77,13 +77,19 @@ CREATE TABLE IF NOT EXISTS providers (
     'github-copilot',
     'edge-speech',
     'openai-speech',
+    'openai-transcription',
     'openrouter-speech',
+    'openrouter-transcription',
     'elevenlabs-speech',
+    'elevenlabs-transcription',
     'deepgram-speech',
+    'deepgram-transcription',
     'minimax-speech',
     'volcengine-speech',
     'alibabacloud-speech',
-    'microsoft-speech'
+    'microsoft-speech',
+    'google-speech',
+    'google-transcription'
   ))
 );
 
@@ -108,7 +114,7 @@ CREATE TABLE IF NOT EXISTS models (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT models_provider_id_model_id_unique UNIQUE (provider_id, model_id),
-  CONSTRAINT models_type_check CHECK (type IN ('chat', 'embedding', 'speech'))
+  CONSTRAINT models_type_check CHECK (type IN ('chat', 'embedding', 'speech', 'transcription'))
 );
 
 CREATE TABLE IF NOT EXISTS model_variants (
@@ -170,6 +176,7 @@ CREATE TABLE IF NOT EXISTS bots (
   image_model_id UUID REFERENCES models(id) ON DELETE SET NULL,
   discuss_probe_model_id UUID REFERENCES models(id) ON DELETE SET NULL,
   tts_model_id UUID REFERENCES models(id) ON DELETE SET NULL,
+  transcription_model_id UUID REFERENCES models(id) ON DELETE SET NULL,
   browser_context_id UUID REFERENCES browser_contexts(id) ON DELETE SET NULL,
   persist_full_tool_results BOOLEAN NOT NULL DEFAULT false,
   metadata JSONB NOT NULL DEFAULT '{}'::jsonb,

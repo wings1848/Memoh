@@ -85,7 +85,7 @@
       v-else-if="advancedFields.length === 0"
       class="text-xs text-muted-foreground"
     >
-      {{ $t('speech.noCapabilities') }}
+      {{ mode === 'transcription' ? $t('transcription.noCapabilities') : $t('speech.noCapabilities') }}
     </div>
 
     <div
@@ -97,7 +97,7 @@
         class="flex w-full items-center justify-between px-3 py-2 text-left text-xs font-medium"
         @click="showAdvanced = !showAdvanced"
       >
-        <span>{{ $t('speech.advanced.title') }}</span>
+        <span>{{ mode === 'transcription' ? $t('transcription.advanced.title') : $t('speech.advanced.title') }}</span>
         <component
           :is="showAdvanced ? ChevronUp : ChevronDown"
           class="size-3 text-muted-foreground"
@@ -108,7 +108,7 @@
         class="space-y-4 border-t border-border px-3 py-3"
       >
         <p class="text-xs text-muted-foreground">
-          {{ $t('speech.advanced.description') }}
+          {{ mode === 'transcription' ? $t('transcription.advanced.description') : $t('speech.advanced.description') }}
         </p>
         <section
           v-for="field in advancedFields"
@@ -195,9 +195,12 @@
 
     <div class="space-y-3">
       <h4 class="text-xs font-medium">
-        {{ $t('speech.test.title') }}
+        {{ mode === 'transcription' ? $t('transcription.test.title') : $t('speech.test.title') }}
       </h4>
-      <div class="relative">
+      <div
+        v-if="mode === 'synthesis'"
+        class="relative"
+      >
         <Textarea
           v-model="testText"
           :placeholder="$t('speech.test.placeholder')"
@@ -209,17 +212,36 @@
           {{ testText.length }}/{{ maxTestTextLen }}
         </span>
       </div>
+      <div
+        v-else
+        class="space-y-2"
+      >
+        <Input
+          type="file"
+          accept="audio/*"
+          @change="handleFileChange"
+        />
+        <p
+          v-if="selectedFileName"
+          class="text-xs text-muted-foreground"
+        >
+          {{ selectedFileName }}
+        </p>
+      </div>
       <div class="flex items-center gap-3">
         <LoadingButton
           type="button"
           variant="outline"
           size="sm"
           :loading="testLoading"
-          :disabled="!testText.trim() || testText.length > maxTestTextLen"
+          :disabled="mode === 'synthesis' ? (!testText.trim() || testText.length > maxTestTextLen) : !selectedFile"
           @click="handleTest"
         >
-          <Play class="mr-1.5" />
-          {{ $t('speech.test.generate') }}
+          <Play
+            v-if="mode === 'synthesis'"
+            class="mr-1.5"
+          />
+          {{ mode === 'transcription' ? $t('transcription.test.run') : $t('speech.test.generate') }}
         </LoadingButton>
         <span
           v-if="testError"
@@ -229,7 +251,7 @@
         </span>
       </div>
       <div
-        v-if="audioUrl"
+        v-if="mode === 'synthesis' && audioUrl"
         class="rounded-md border border-border bg-muted/30 p-3"
       >
         <audio
@@ -238,6 +260,20 @@
           controls
           class="w-full"
         />
+      </div>
+      <div
+        v-if="mode === 'transcription' && transcriptionText"
+        class="rounded-md border border-border bg-muted/30 p-3 space-y-2"
+      >
+        <p class="text-sm whitespace-pre-wrap wrap-break-word">
+          {{ transcriptionText }}
+        </p>
+        <p
+          v-if="transcriptionLanguage"
+          class="text-xs text-muted-foreground"
+        >
+          {{ transcriptionLanguage }}
+        </p>
       </div>
     </div>
 
@@ -296,7 +332,8 @@ const props = defineProps<{
   modelName: string
   config: Record<string, unknown>
   schema: SpeechConfigSchema | null
-  onTest: (text: string, config: Record<string, unknown>) => Promise<Blob>
+  mode?: 'synthesis' | 'transcription'
+  onTest: (payload: string | File, config: Record<string, unknown>) => Promise<Blob | { text?: string, language?: string }>
 }>()
 
 const emit = defineEmits<{
@@ -309,11 +346,16 @@ const visibleSecrets = reactive<Record<string, boolean>>({})
 const saving = ref(false)
 const showAdvanced = ref(false)
 const testText = ref('')
+const selectedFile = ref<File | null>(null)
+const selectedFileName = ref('')
 const testLoading = ref(false)
 const testError = ref('')
 const audioUrl = ref('')
+const transcriptionText = ref('')
+const transcriptionLanguage = ref('')
 const audioEl = ref<HTMLAudioElement>()
 const maxTestTextLen = 500
+const mode = computed(() => props.mode ?? 'synthesis')
 
 const orderedFields = computed(() => {
   const fields = props.schema?.fields ?? []
@@ -348,6 +390,11 @@ function revokeAudio() {
   }
 }
 
+function resetTranscription() {
+  transcriptionText.value = ''
+  transcriptionLanguage.value = ''
+}
+
 onBeforeUnmount(revokeAudio)
 
 async function handleSaveConfig() {
@@ -360,23 +407,39 @@ async function handleSaveConfig() {
 }
 
 async function handleTest() {
-  if (!testText.value.trim()) return
+  if (mode.value === 'synthesis' && !testText.value.trim()) return
+  if (mode.value === 'transcription' && !selectedFile.value) return
   testLoading.value = true
   testError.value = ''
   revokeAudio()
+  resetTranscription()
 
   try {
-    const blob = await props.onTest(testText.value, buildConfig())
+    const result = await props.onTest(mode.value === 'synthesis' ? testText.value : selectedFile.value as File, buildConfig())
 
-    audioUrl.value = URL.createObjectURL(blob)
-    await new Promise<void>((resolve) => setTimeout(resolve, 50))
-    audioEl.value?.play()
+    if (mode.value === 'synthesis') {
+      const blob = result as Blob
+      audioUrl.value = URL.createObjectURL(blob)
+      await new Promise<void>((resolve) => setTimeout(resolve, 50))
+      audioEl.value?.play()
+    } else {
+      const payload = result as { text?: string, language?: string }
+      transcriptionText.value = payload.text ?? ''
+      transcriptionLanguage.value = payload.language ?? ''
+    }
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : t('speech.test.failed')
+    const msg = error instanceof Error ? error.message : t(mode.value === 'transcription' ? 'transcription.test.failed' : 'speech.test.failed')
     testError.value = msg
     toast.error(msg)
   } finally {
     testLoading.value = false
   }
+}
+
+function handleFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0] ?? null
+  selectedFile.value = file
+  selectedFileName.value = file?.name ?? ''
 }
 </script>
