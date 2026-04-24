@@ -35,14 +35,6 @@
       </ItemTitle>
       <ItemDescription class="gap-2 flex flex-wrap items-center mt-3 min-h-6">
         <ModelCapabilities :compatibilities="model.config?.compatibilities || []" />
-        <Badge
-          v-for="effort in reasoningEfforts"
-          :key="effort"
-          variant="secondary"
-          class="text-xs"
-        >
-          {{ effort }}
-        </Badge>
         <ContextWindowBadge :context-window="model.config?.context_window" />
         <span
           v-if="testResult && testResult.status !== 'ok' && testResult.message"
@@ -112,10 +104,6 @@ import { postModelsByIdTest } from '@memohai/sdk'
 import type { ModelsGetResponse, ModelsTestResponse } from '@memohai/sdk'
 import { ref, computed } from 'vue'
 
-type ModelConfigWithReasoning = {
-  reasoning_efforts?: string[]
-}
-
 const props = defineProps<{
   model: ModelsGetResponse
   deleteLoading: boolean
@@ -128,7 +116,6 @@ defineEmits<{
 
 const testLoading = ref(false)
 const testResult = ref<ModelsTestResponse | null>(null)
-const reasoningEfforts = computed(() => ((props.model.config as ModelConfigWithReasoning | undefined)?.reasoning_efforts ?? []))
 
 const typeIcon = computed(() => {
   return props.model.type === 'embedding' ? Binary : MessageSquare
