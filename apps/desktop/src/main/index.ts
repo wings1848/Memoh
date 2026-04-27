@@ -33,17 +33,24 @@ function loadRendererEntry(window: BrowserWindow, entry: 'index' | 'settings'): 
 // output is what wires the IPC bridge into the renderer.
 const PRELOAD_FILE = '../preload/index.mjs'
 
-// On macOS we hide the system titlebar but keep the native traffic lights
-// (`hiddenInset`). Renderers reserve space for them via a custom TopBar.
-const macTitleBarOptions: Partial<Electron.BrowserWindowConstructorOptions>
-  = process.platform === 'darwin'
-    ? { titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 14, y: 12 } }
-    : {}
+// On macOS we hide the system titlebar but keep the native traffic lights.
+// A transparent window background prevents the hidden titlebar area from
+// flashing or retaining the default white backing above the renderer.
+function macWindowChromeOptions(tabbingIdentifier: string): Partial<Electron.BrowserWindowConstructorOptions> {
+  if (process.platform !== 'darwin') return {}
+  return {
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 14, y: 12 },
+    transparent: true,
+    backgroundColor: '#00000000',
+    tabbingIdentifier,
+  }
+}
 
 function createChatWindow(): BrowserWindow {
   const window = new BrowserWindow({
     ...CHAT_DEFAULTS,
-    ...macTitleBarOptions,
+    ...macWindowChromeOptions('memoh-chat'),
     show: false,
     autoHideMenuBar: true,
     title: 'Memoh',
@@ -68,17 +75,14 @@ function createChatWindow(): BrowserWindow {
   return window
 }
 
-function createSettingsWindow(parent: BrowserWindow | null): BrowserWindow {
+function createSettingsWindow(): BrowserWindow {
   const window = new BrowserWindow({
     ...SETTINGS_DEFAULTS,
-    ...macTitleBarOptions,
+    ...macWindowChromeOptions('memoh-settings'),
     show: false,
     autoHideMenuBar: true,
     title: 'Memoh · Settings',
     icon: iconPng,
-    parent: parent ?? undefined,
-    // Not modal — user can still interact with the chat window while settings is open.
-    modal: false,
     webPreferences: {
       preload: join(__dirname, PRELOAD_FILE),
       sandbox: false,
@@ -86,8 +90,10 @@ function createSettingsWindow(parent: BrowserWindow | null): BrowserWindow {
       nodeIntegration: false,
     },
   })
+  window.setParentWindow(null)
 
   window.on('ready-to-show', () => {
+    window.setParentWindow(null)
     window.show()
   })
   window.on('closed', () => {
@@ -105,7 +111,7 @@ function ensureWindow(kind: WindowKind): BrowserWindow {
     return chatWindow
   }
   if (!settingsWindow || settingsWindow.isDestroyed()) {
-    settingsWindow = createSettingsWindow(chatWindow)
+    settingsWindow = createSettingsWindow()
   }
   return settingsWindow
 }
