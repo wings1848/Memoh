@@ -529,7 +529,15 @@ func (a *Agent) runStream(ctx context.Context, cfg RunConfig, ch chan<- StreamEv
 			)
 		}
 	}
-	sendEvent(ctx, ch, termEvent)
+	// Deliver the terminal event using a context that is NOT cancelled when
+	// the parent ctx is cancelled (user abort / idle timeout / loop-detect).
+	// Otherwise sendEvent would short-circuit on <-ctx.Done() and the consumer
+	// would never receive the partial messages accumulated so far, forcing it
+	// to fall back to a synthetic placeholder. A 5s deadline guards against
+	// a fully-disconnected consumer hanging this goroutine forever.
+	deliveryCtx, deliveryCancel := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+	defer deliveryCancel()
+	sendEvent(deliveryCtx, ch, termEvent)
 }
 
 func (a *Agent) runGenerate(ctx context.Context, cfg RunConfig) (*GenerateResult, error) {
@@ -1188,9 +1196,23 @@ func (a *Agent) runMidStreamRetry(
 			for range retryResult.Stream {
 			}
 		}
+		// Merge prev messages into retryResult so the caller sees the full
+		// accumulated history (initial run + retry continuation). The SDK's
+		// StreamResult.Messages only contains messages produced within that
+		// StreamText call, so without this merge the original steps before
+		// the mid-stream error would be lost when the retry result becomes
+		// the new streamResult.
+		if len(prevResult.Messages) > 0 {
+			merged := make([]sdk.Message, 0, len(prevResult.Messages)+len(retryResult.Messages))
+			merged = append(merged, prevResult.Messages...)
+			merged = append(merged, retryResult.Messages...)
+			retryResult.Messages = merged
+		}
 		return retryResult, aborted || detectGenerateLoopAbort(streamCtx, streamCtx.Err()) != nil
 	}
-	// All retry attempts failed
+	// All retry attempts failed to even start a new stream — return the
+	// previous (already drained) result so its accumulated messages are
+	// preserved as the final partial state.
 	return prevResult, true
 }
 
