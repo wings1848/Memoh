@@ -243,20 +243,48 @@ update both Web/CI and desktop typecheck.
 On `process.platform === 'darwin'` only, both `BrowserWindow`s opt in to:
 
 ```ts
-{ titleBarStyle: 'hiddenInset', trafficLightPosition: { x: 14, y: 12 } }
+{ titleBarStyle: 'hidden', trafficLightPosition: { x: 14, y: 12 } }
 ```
 
 The native titlebar is hidden but the traffic lights remain at a fixed
-position. The reusable web sidebars reserve a 36px-tall (h-9) header above
-the sidebar content, marked `[-webkit-app-region:drag]` so the window can
-be dragged from there. Inside that strip, interactive elements (e.g. the
-chat sidebar `+` button) need an explicit
-`[-webkit-app-region:no-drag]` wrapper to stay clickable.
+position. To let the user grab the **entire** top of each window —
+not just the sidebar corner — the two windows take different paths,
+chosen so the chrome looks intentional rather than introducing an
+empty grey gap above the page content:
 
-The chat content also gets a floating "Title - BotName" header overlaid
-with a bottom-fade gradient. It's `pointer-events:none` so scroll/clicks
-fall through to messages, and the message list reserves the equivalent
-top padding so the first message isn't obscured at rest.
+- **Both sidebars** (`components/sidebar/index.vue`,
+  `components/settings-sidebar/index.vue`) render their existing
+  36px-tall (`h-9`) `position:fixed` drag header above the sidebar
+  body when `topInset` is true, marked `[-webkit-app-region:drag]`
+  with `pl-[78px]` to clear the traffic lights. Interactive elements
+  inside (e.g. the chat sidebar `+` button) opt out with explicit
+  `[-webkit-app-region:no-drag]` wrappers.
+
+- **Chat right side** reuses the existing 48px tab bars instead of
+  reserving a separate strip. The two chat-window tab-bar rows —
+  `pages/home/components/chat-sidebar.vue` (activity tabs) and
+  `pages/home/components/workspace-tab-bar.vue` (workspace tabs +
+  toolkit) — both carry `[-webkit-app-region:drag]` on the row root,
+  while every interactive child (tab button, close `×`, terminal
+  button, dropdown trigger) carries `[-webkit-app-region:no-drag]`.
+  Empty space within the bars is therefore draggable; clicks on
+  buttons still work. No extra height is added to the chat window.
+
+- **Settings right side** can't reuse the chat trick — settings
+  pages vary too much (master/detail layouts, full-page tables,
+  forms) and a 36px chrome strip above the page looks out of place.
+  Instead, `apps/desktop/src/renderer/src/settings/App.vue` paints
+  an invisible 16px-tall (`h-4`) `position:fixed` drag strip across
+  the very top edge of the window at `z-10`, sized to match the
+  routed sections' `p-4` top padding so it lives in the page's
+  existing dead space. The SettingsSidebar's own drag header sits
+  at `z-20` and covers the strip on the left half; on the right
+  half the strip is the topmost layer and becomes a thin
+  transparent grab zone. On `MasterDetailSidebarLayout` pages the
+  inner sidebar's `SidebarMenu` only has `p-2` (8px), so the
+  strip's lower 8px clips the very top of the first sidebar item —
+  acceptable because those rows are `py-5` and the bulk of each
+  hit area remains clickable. No visible chrome is added.
 
 ## electron-vite Configuration
 
