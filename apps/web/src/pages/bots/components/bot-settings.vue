@@ -384,6 +384,7 @@ import BrowserContextSelect from './browser-context-select.vue'
 import { useQuery, useMutation, useQueryCache } from '@pinia/colada'
 import { getBotsById, putBotsById, getBotsByBotIdSettings, putBotsByBotIdSettings, deleteBotsById, getModels, getProviders, getSearchProviders, getMemoryProviders, getSpeechProviders, getSpeechModels, getTranscriptionProviders, getTranscriptionModels, getBrowserContexts, getBotsByBotIdMemoryStatus, postBotsByBotIdMemoryRebuild } from '@memohai/sdk'
 import type { SettingsSettings } from '@memohai/sdk'
+import { getBotsQueryKey } from '@memohai/sdk/colada'
 import type { Ref } from 'vue'
 import { resolveApiErrorMessage } from '@/utils/api-error'
 import { emptyTimezoneValue } from '@/utils/timezones'
@@ -419,7 +420,7 @@ const { data: bot } = useQuery({
 })
 
 const { data: modelData } = useQuery({
-  key: ['all-models'],
+  key: ['models'],
   query: async () => {
     const { data } = await getModels({ throwOnError: true })
     return data
@@ -427,7 +428,7 @@ const { data: modelData } = useQuery({
 })
 
 const { data: providerData } = useQuery({
-  key: ['all-providers'],
+  key: ['providers'],
   query: async () => {
     const { data } = await getProviders({ throwOnError: true })
     return data
@@ -435,7 +436,7 @@ const { data: providerData } = useQuery({
 })
 
 const { data: searchProviderData } = useQuery({
-  key: ['all-search-providers'],
+  key: ['search-providers'],
   query: async () => {
     const { data } = await getSearchProviders({ throwOnError: true })
     return data
@@ -443,7 +444,7 @@ const { data: searchProviderData } = useQuery({
 })
 
 const { data: memoryProviderData } = useQuery({
-  key: ['all-memory-providers'],
+  key: ['memory-providers'],
   query: async () => {
     const { data } = await getMemoryProviders({ throwOnError: true })
     return data
@@ -483,7 +484,7 @@ const { data: transcriptionProviderData } = useQuery({
 })
 
 const { data: browserContextData } = useQuery({
-  key: ['all-browser-contexts'],
+  key: ['browser-contexts'],
   query: async () => {
     const { data } = await getBrowserContexts({ throwOnError: true })
     return data
@@ -513,7 +514,7 @@ const { mutateAsync: updateBot, isLoading: isUpdatingBot } = useMutation({
   },
   onSettled: () => {
     queryCache.invalidateQueries({ key: ['bot', botIdRef.value] })
-    queryCache.invalidateQueries({ key: ['bots'] })
+    queryCache.invalidateQueries({ key: getBotsQueryKey() })
   },
 })
 
@@ -522,7 +523,7 @@ const { mutateAsync: deleteBot, isLoading: deleteLoading } = useMutation({
     await deleteBotsById({ path: { id: botIdRef.value }, throwOnError: true })
   },
   onSettled: () => {
-    queryCache.invalidateQueries({ key: ['bots'] })
+    queryCache.invalidateQueries({ key: getBotsQueryKey() })
     queryCache.invalidateQueries({ key: ['bot'] })
   },
 })

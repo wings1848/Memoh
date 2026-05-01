@@ -227,6 +227,7 @@ import {
   getBotsByBotIdContainer,
   getBotsByBotIdContainerSnapshots,
 } from '@memohai/sdk'
+import { getBotsQueryKey } from '@memohai/sdk/colada'
 import type {
   BotsBotCheck, HandlersGetContainerResponse,
   HandlersListSnapshotsResponse,
@@ -311,7 +312,7 @@ const { mutateAsync: updateBot, isLoading: updateBotLoading } = useMutation({
     return data
   },
   onSettled: () => {
-    queryCache.invalidateQueries({ key: ['bots'] })
+    queryCache.invalidateQueries({ key: getBotsQueryKey() })
     queryCache.invalidateQueries({ key: ['bot'] })
   },
 })

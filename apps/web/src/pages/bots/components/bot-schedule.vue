@@ -224,9 +224,10 @@
 
 <script setup lang="ts">
 import { Calendar, Pencil, Plus, Trash2 } from 'lucide-vue-next'
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
+import { useQueryCache } from '@pinia/colada'
 import {
   Button, Badge, Spinner, Switch,
   Pagination, PaginationContent, PaginationEllipsis,
@@ -293,6 +294,12 @@ function formatMaxCalls(item: ScheduleSchedule): string {
   return t('bots.schedule.unlimited')
 }
 
+const queryCache = useQueryCache()
+
+function invalidateSidebarSchedule() {
+  queryCache.invalidateQueries({ key: ['bot-schedule', props.botId] })
+}
+
 async function fetchSchedules() {
   if (!props.botId) return
   isLoading.value = true
@@ -343,6 +350,7 @@ function handleEdit(item: ScheduleSchedule) {
 
 async function handleSaved() {
   await fetchSchedules()
+  invalidateSidebarSchedule()
 }
 
 async function handleToggleEnabled(item: ScheduleSchedule, enabled: boolean) {
@@ -356,6 +364,7 @@ async function handleToggleEnabled(item: ScheduleSchedule, enabled: boolean) {
       throwOnError: true,
     })
     await fetchSchedules()
+    invalidateSidebarSchedule()
   } catch (error) {
     toast.error(resolveApiErrorMessage(error, t('bots.schedule.saveFailed')))
   } finally {
@@ -374,6 +383,7 @@ async function handleDelete(item: ScheduleSchedule) {
     })
     toast.success(t('bots.schedule.deleteSuccess'))
     await fetchSchedules()
+    invalidateSidebarSchedule()
   } catch (error) {
     toast.error(resolveApiErrorMessage(error, t('bots.schedule.deleteFailed')))
   } finally {
@@ -385,4 +395,17 @@ onMounted(() => {
   fetchSchedules()
   fetchBotSettings()
 })
+
+// Refresh local list when chat-sidebar invalidates the shared schedule cache.
+watch(
+  () => {
+    const entries = queryCache.getEntries({ key: ['bot-schedule', props.botId] })
+    return entries[0]?.state.value.data
+  },
+  (next, prev) => {
+    if (!props.botId) return
+    if (next === prev) return
+    void fetchSchedules()
+  },
+)
 </script>

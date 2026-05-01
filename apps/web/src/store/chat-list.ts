@@ -94,6 +94,19 @@ export const useChatStore = defineStore('chat', () => {
   const overrideModelId = ref<string>('')
   const overrideReasoningEffort = ref<string>('')
 
+  // Bumps every time a fs-mutating tool call (write/edit/exec) finishes for the
+  // current bot. File-manager components watch this to refresh their listings
+  // and any open file viewers without polling.
+  const fsChangedAt = ref(0)
+  const FS_MUTATING_TOOLS = new Set(['write', 'edit', 'exec'])
+
+  function bumpFsChangedAtIfFsMutation(message: UIMessage) {
+    if (message.type !== 'tool') return
+    if (message.running) return
+    if (!FS_MUTATING_TOOLS.has(message.name)) return
+    fsChangedAt.value = Date.now()
+  }
+
   let abortFn: (() => void) | null = null
   let messageEventsSince = ''
   let pendingAssistantStream: PendingAssistantStream | null = null
@@ -304,6 +317,7 @@ export const useChatStore = defineStore('chat', () => {
   function upsertAssistantUIMessage(turn: ChatAssistantTurn, message: UIMessage) {
     const normalized = normalizeUIMessage(message)
     turn.messages = upsertById(turn.messages, normalized)
+    bumpFsChangedAtIfFsMutation(message)
   }
 
   function nextAssistantMessageId(turn: ChatAssistantTurn): number {
@@ -850,6 +864,7 @@ export const useChatStore = defineStore('chat', () => {
     initializing,
     overrideModelId,
     overrideReasoningEffort,
+    fsChangedAt,
     initialize,
     selectBot,
     selectSession,
