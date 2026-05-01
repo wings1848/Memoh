@@ -70,17 +70,19 @@
     >
 
     <div class="flex-1 min-h-0 relative">
-      <ScrollArea class="absolute inset-0">
-        <FileList
-          :entries="entries"
-          :loading="loading"
-          @navigate="navigateTo"
-          @open="handleOpenFile"
-          @download="handleDownload"
-          @rename="openRenameDialog"
-          @delete="openDeleteDialog"
-        />
-      </ScrollArea>
+      <div class="absolute inset-0">
+        <ScrollArea class="h-full">
+          <FileList
+            :entries="entries"
+            :loading="loading"
+            @navigate="navigateTo"
+            @open="handleOpenFile"
+            @download="handleDownload"
+            @rename="openRenameDialog"
+            @delete="openDeleteDialog"
+          />
+        </ScrollArea>
+      </div>
     </div>
 
     <Dialog v-model:open="mkdirDialogOpen">
