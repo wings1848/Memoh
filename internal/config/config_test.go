@@ -150,6 +150,31 @@ binary_path = "/opt/homebrew/bin/socktainer"
 	}
 }
 
+func TestLoadAppLocalTemplate(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("..", "..", "conf", "app.local.toml"))
+	if err != nil {
+		t.Fatalf("read app.local.toml: %v", err)
+	}
+	rendered := strings.ReplaceAll(string(raw), "__PROJECT_ROOT__", filepath.ToSlash(filepath.Join("..", "..")))
+	configPath := filepath.Join(t.TempDir(), "app.local.toml")
+	if err := os.WriteFile(configPath, []byte(rendered), 0o600); err != nil {
+		t.Fatalf("write rendered app.local.toml: %v", err)
+	}
+	cfg, err := Load(configPath)
+	if err != nil {
+		t.Fatalf("load app.local.toml: %v", err)
+	}
+	if cfg.Container.Backend != "docker" {
+		t.Fatalf("container backend = %q, want docker", cfg.Container.Backend)
+	}
+	if !cfg.Local.Enabled {
+		t.Fatal("local workspace should be enabled")
+	}
+	if cfg.Database.DriverOrDefault() != "sqlite" {
+		t.Fatalf("database driver = %q, want sqlite", cfg.Database.DriverOrDefault())
+	}
+}
+
 func TestWorkspaceImagePullPolicyDefaultsAndNormalizes(t *testing.T) {
 	if got := (WorkspaceConfig{}).EffectiveImagePullPolicy(); got != ImagePullPolicyIfNotPresent {
 		t.Fatalf("default policy = %q", got)
