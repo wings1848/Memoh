@@ -140,56 +140,11 @@
       </MasterDetailSidebarLayout>
     </div>
 
-    <!-- Edit avatar dialog -->
-    <Dialog v-model:open="avatarDialogOpen">
-      <DialogContent class="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{{ $t('bots.editAvatar') }}</DialogTitle>
-          <DialogDescription>
-            {{ $t('bots.editAvatarDescription') }}
-          </DialogDescription>
-        </DialogHeader>
-        <div class="mt-4 flex flex-col items-center gap-4">
-          <Avatar class="size-20 shrink-0 rounded-full">
-            <AvatarImage
-              v-if="avatarUrlDraft.trim()"
-              :src="avatarUrlDraft.trim()"
-              :alt="bot?.display_name"
-            />
-            <AvatarFallback class="text-xl">
-              {{ avatarFallback }}
-            </AvatarFallback>
-          </Avatar>
-          <Input
-            v-model="avatarUrlDraft"
-            type="url"
-            class="w-full"
-            :placeholder="$t('bots.avatarUrlPlaceholder')"
-            :disabled="avatarSaving"
-          />
-        </div>
-        <DialogFooter class="mt-6">
-          <DialogClose as-child>
-            <Button
-              variant="outline"
-              :disabled="avatarSaving"
-            >
-              {{ $t('common.cancel') }}
-            </Button>
-          </DialogClose>
-          <Button
-            :disabled="avatarSaving || !canConfirmAvatar"
-            @click="handleConfirmAvatar"
-          >
-            <Spinner
-              v-if="avatarSaving"
-              class="mr-1.5"
-            />
-            {{ $t('common.confirm') }}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AvatarEditDialog
+      v-model:open="avatarDialogOpen"
+      v-model:avatar-url="avatarUrlModel"
+      :fallback-text="avatarFallback"
+    />
   </section>
 </template>
 
@@ -200,16 +155,8 @@ import {
   AvatarFallback,
   Badge,
   Button,
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   Input,
   Separator,
-  Spinner,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -248,6 +195,7 @@ import BotOverview from './components/bot-overview.vue'
 import BotSchedule from './components/bot-schedule.vue'
 import BotContainer from './components/bot-container.vue'
 import BotAccess from './components/bot-access.vue'
+import AvatarEditDialog from './components/avatar-edit-dialog.vue'
 import { resolveApiErrorMessage } from '@/utils/api-error'
 import { useAvatarInitials } from '@/composables/useAvatarInitials'
 import { useSyncedQueryParam } from '@/composables/useSyncedQueryParam'
@@ -366,15 +314,27 @@ watch([tabList, activeTab], ([tabs, tab]) => {
   }
 }, { immediate: true })
 const avatarDialogOpen = ref(false)
-const avatarUrlDraft = ref('')
+const avatarUrlModel = ref('')
 const avatarFallback = useAvatarInitials(() => bot.value?.display_name || botId.value || '')
 const isSavingBotName = computed(() => updateBotLoading.value)
-const avatarSaving = computed(() => updateBotLoading.value)
-const canConfirmAvatar = computed(() => {
-  if (!bot.value) return false
-  const next = avatarUrlDraft.value.trim()
+
+watch(() => bot.value?.avatar_url, (url) => {
+  avatarUrlModel.value = url || ''
+}, { immediate: true })
+
+watch(avatarUrlModel, async (nextUrl) => {
+  if (!bot.value) return
   const current = (bot.value.avatar_url || '').trim()
-  return next !== current
+  if (nextUrl.trim() === current) return
+  try {
+    await updateBot({
+      id: bot.value.id as string,
+      avatar_url: nextUrl || undefined,
+    })
+    toast.success(t('bots.avatarUpdateSuccess'))
+  } catch (error) {
+    toast.error(resolveErrorMessage(error, t('bots.avatarUpdateFailed')))
+  }
 })
 const canConfirmBotName = computed(() => {
   if (!bot.value) return false
@@ -430,23 +390,7 @@ function resolveErrorMessage(error: unknown, fallback: string): string {
 
 function handleEditAvatar() {
   if (!bot.value || botLifecyclePending.value) return
-  avatarUrlDraft.value = bot.value.avatar_url || ''
   avatarDialogOpen.value = true
-}
-
-async function handleConfirmAvatar() {
-  if (!bot.value || !canConfirmAvatar.value || avatarSaving.value) return
-  const nextUrl = avatarUrlDraft.value.trim()
-  try {
-    await updateBot({
-      id: bot.value.id as string,
-      avatar_url: nextUrl || undefined,
-    })
-    avatarDialogOpen.value = false
-    toast.success(t('bots.avatarUpdateSuccess'))
-  } catch (error) {
-    toast.error(resolveErrorMessage(error, t('bots.avatarUpdateFailed')))
-  }
 }
 
 function handleStartEditBotName() {
