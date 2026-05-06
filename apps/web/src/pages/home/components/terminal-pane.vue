@@ -26,17 +26,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, onActivated, onDeactivated, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Terminal } from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
+import { SerializeAddon } from '@xterm/addon-serialize'
 import { client } from '@memohai/sdk/client'
 import { Button } from '@memohai/ui'
+import {
+  readTerminalSnapshot,
+  terminalCacheKey,
+  writeTerminalSnapshot,
+} from '@/composables/useTerminalCache'
 import '@xterm/xterm/css/xterm.css'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   botId: string
-}>()
+  tabId: string
+  active?: boolean
+}>(), {
+  active: false,
+})
 
 const { t } = useI18n()
 
@@ -58,10 +68,29 @@ const status = ref<'idle' | 'connecting' | 'connected' | 'disconnected'>('idle')
 
 let terminal: Terminal | null = null
 let fitAddon: FitAddon | null = null
+let serializeAddon: SerializeAddon | null = null
 let ws: WebSocket | null = null
 let resizeObserver: ResizeObserver | null = null
 let fitTimer: ReturnType<typeof setTimeout> | null = null
 let disposables: Array<{ dispose(): void }> = []
+
+function currentCacheKey(): string {
+  return terminalCacheKey(props.botId, props.tabId)
+}
+
+function persistSnapshot() {
+  if (!serializeAddon) return
+  try {
+    writeTerminalSnapshot(currentCacheKey(), serializeAddon.serialize())
+  } catch (error) {
+    console.warn('Failed to serialize terminal buffer:', error)
+  }
+}
+
+function fitTerminal() {
+  if (!props.active) return
+  fitAddon?.fit()
+}
 
 function resolveTerminalWsUrl(cols: number, rows: number): string {
   const baseUrl = String(client.getConfig().baseUrl || '').trim()
@@ -101,7 +130,7 @@ function connectWs() {
   if (!terminal) return
   closeWs()
 
-  fitAddon?.fit()
+  fitTerminal()
 
   const cols = terminal.cols
   const rows = terminal.rows
@@ -157,9 +186,10 @@ function reconnect() {
 function setupResizeObserver() {
   if (resizeObserver || !wrapperRef.value) return
   resizeObserver = new ResizeObserver(() => {
+    if (!props.active) return
     if (fitTimer) clearTimeout(fitTimer)
     fitTimer = setTimeout(() => {
-      fitAddon?.fit()
+      fitTerminal()
     }, 50)
   })
   resizeObserver.observe(wrapperRef.value)
@@ -169,20 +199,57 @@ onMounted(() => {
   if (!containerRef.value) return
   const term = new Terminal({ ...TERMINAL_OPTIONS })
   const fa = new FitAddon()
+  const sa = new SerializeAddon()
   term.loadAddon(fa)
+  term.loadAddon(sa)
   term.open(containerRef.value)
 
   terminal = term
   fitAddon = fa
+  serializeAddon = sa
+
+  const snapshot = readTerminalSnapshot(currentCacheKey())
+  if (snapshot) {
+    term.write(snapshot)
+  }
 
   nextTick(() => {
-    fa.fit()
-    connectWs()
     setupResizeObserver()
+    if (props.active) {
+      fa.fit()
+      connectWs()
+    }
   })
 })
 
+onActivated(() => {
+  nextTick(() => {
+    fitTerminal()
+  })
+})
+
+onDeactivated(() => {
+  persistSnapshot()
+})
+
+watch(
+  () => props.active,
+  async (active) => {
+    if (!active) {
+      persistSnapshot()
+      return
+    }
+    await nextTick()
+    fitTerminal()
+    if (status.value === 'idle') {
+      connectWs()
+    }
+  },
+  { flush: 'post' },
+)
+
 onBeforeUnmount(() => {
+  persistSnapshot()
   if (fitTimer) {
     clearTimeout(fitTimer)
     fitTimer = null
@@ -195,6 +262,7 @@ onBeforeUnmount(() => {
   terminal?.dispose()
   terminal = null
   fitAddon = null
+  serializeAddon = null
 })
 </script>
 

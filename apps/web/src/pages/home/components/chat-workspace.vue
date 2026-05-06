@@ -14,11 +14,16 @@
           :tab-id="activeTab.id"
           :file-path="activeTab.filePath"
         />
-        <TerminalPane
-          v-else-if="activeTab.type === 'terminal' && currentBotId"
-          :key="`terminal-pane:${activeTab.id}`"
-          :bot-id="currentBotId"
-        />
+        <template v-if="currentBotId">
+          <TerminalPane
+            v-for="tab in terminalTabs"
+            v-show="activeTab.id === tab.id"
+            :key="`terminal-pane:${currentBotId}:${tab.id}`"
+            :bot-id="currentBotId"
+            :tab-id="tab.id"
+            :active="activeTab.id === tab.id"
+          />
+        </template>
       </template>
       <div
         v-else
@@ -38,9 +43,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
-import { useWorkspaceTabsStore } from '@/store/workspace-tabs'
+import { useWorkspaceTabsStore, type WorkspaceTab } from '@/store/workspace-tabs'
 import { useChatStore } from '@/store/chat-list'
 import WorkspaceTabBar from './workspace-tab-bar.vue'
 import ChatPane from './chat-pane.vue'
@@ -49,7 +55,13 @@ import TerminalPane from './terminal-pane.vue'
 
 const { t } = useI18n()
 const store = useWorkspaceTabsStore()
-const { activeTab } = storeToRefs(store)
+const { activeTab, tabs } = storeToRefs(store)
 const chatStore = useChatStore()
 const { currentBotId } = storeToRefs(chatStore)
+
+type TerminalTab = Extract<WorkspaceTab, { type: 'terminal' }>
+
+const terminalTabs = computed<TerminalTab[]>(() =>
+  tabs.value.filter((tab): tab is TerminalTab => tab.type === 'terminal'),
+)
 </script>
