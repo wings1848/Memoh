@@ -1,6 +1,9 @@
 package tools
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestBrowserKeyChordHelpers(t *testing.T) {
 	parts := splitKeyChord("Control+Shift+a")
@@ -75,6 +78,22 @@ func TestBrowserRefHelpers(t *testing.T) {
 	result := target.withResult(map[string]any{"ok": true})
 	if result["ref"] != "e12" || result["selector"] != "#fallback" {
 		t.Fatalf("target metadata missing from result: %#v", result)
+	}
+}
+
+func TestWrapRuntimeExpressionScopesHelper(t *testing.T) {
+	wrapped := wrapRuntimeExpression("memohInteractiveElements().length")
+	if !strings.HasPrefix(wrapped, "(async () => {") {
+		t.Fatalf("expected async wrapper, got: %s", wrapped)
+	}
+	if !strings.Contains(wrapped, "const memohInteractiveSelector") {
+		t.Fatalf("expected helper in wrapper: %s", wrapped)
+	}
+	if strings.Contains(wrapped, "eval(") {
+		t.Fatalf("wrapper should not rely on eval: %s", wrapped)
+	}
+	if !strings.Contains(wrapped, "return await (\nmemohInteractiveElements().length\n);") {
+		t.Fatalf("expected expression to be evaluated inside wrapper: %s", wrapped)
 	}
 }
 

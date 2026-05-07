@@ -1217,7 +1217,7 @@ type runtimeEvaluateResponse struct {
 }
 
 func (p *cdpPage) evaluate(ctx context.Context, expression string) (any, error) {
-	wrapped := mustElementHelper + "\n" + expression
+	wrapped := wrapRuntimeExpression(expression)
 	result, err := p.conn.Call(ctx, "Runtime.evaluate", map[string]any{
 		"expression":    wrapped,
 		"awaitPromise":  true,
@@ -1238,6 +1238,14 @@ func (p *cdpPage) evaluate(ctx context.Context, expression string) (any, error) 
 		return nil, errors.New(msg)
 	}
 	return remoteObjectValue(out.Result), nil
+}
+
+func wrapRuntimeExpression(expression string) string {
+	expr := strings.TrimSpace(expression)
+	for strings.HasSuffix(expr, ";") {
+		expr = strings.TrimSpace(strings.TrimSuffix(expr, ";"))
+	}
+	return "(async () => {\n" + mustElementHelper + "\nreturn await (\n" + expr + "\n);\n})()"
 }
 
 func (p *cdpPage) evaluateString(ctx context.Context, expression string) (string, error) {
