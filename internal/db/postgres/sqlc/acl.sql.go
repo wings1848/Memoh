@@ -40,7 +40,7 @@ VALUES (
   $11::text,
   $4
 )
-RETURNING id, bot_id, enabled, description, action, effect, channel_identity_id, subject_channel_type, source_channel, source_conversation_type, source_conversation_id, source_thread_id, created_by_user_id, created_at, updated_at
+RETURNING id, bot_id, action, effect, channel_identity_id, source_channel, source_conversation_type, source_conversation_id, source_thread_id, created_by_user_id, created_at, updated_at, enabled, description, subject_channel_type
 `
 
 type CreateBotACLRuleParams struct {
@@ -57,25 +57,7 @@ type CreateBotACLRuleParams struct {
 	SourceThreadID         pgtype.Text `json:"source_thread_id"`
 }
 
-type CreateBotACLRuleRow struct {
-	ID                     pgtype.UUID        `json:"id"`
-	BotID                  pgtype.UUID        `json:"bot_id"`
-	Enabled                bool               `json:"enabled"`
-	Description            pgtype.Text        `json:"description"`
-	Action                 string             `json:"action"`
-	Effect                 string             `json:"effect"`
-	ChannelIdentityID      pgtype.UUID        `json:"channel_identity_id"`
-	SubjectChannelType     pgtype.Text        `json:"subject_channel_type"`
-	SourceChannel          pgtype.Text        `json:"source_channel"`
-	SourceConversationType pgtype.Text        `json:"source_conversation_type"`
-	SourceConversationID   pgtype.Text        `json:"source_conversation_id"`
-	SourceThreadID         pgtype.Text        `json:"source_thread_id"`
-	CreatedByUserID        pgtype.UUID        `json:"created_by_user_id"`
-	CreatedAt              pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt              pgtype.Timestamptz `json:"updated_at"`
-}
-
-func (q *Queries) CreateBotACLRule(ctx context.Context, arg CreateBotACLRuleParams) (CreateBotACLRuleRow, error) {
+func (q *Queries) CreateBotACLRule(ctx context.Context, arg CreateBotACLRuleParams) (BotAclRule, error) {
 	row := q.db.QueryRow(ctx, createBotACLRule,
 		arg.BotID,
 		arg.Enabled,
@@ -89,16 +71,13 @@ func (q *Queries) CreateBotACLRule(ctx context.Context, arg CreateBotACLRulePara
 		arg.SourceConversationID,
 		arg.SourceThreadID,
 	)
-	var i CreateBotACLRuleRow
+	var i BotAclRule
 	err := row.Scan(
 		&i.ID,
 		&i.BotID,
-		&i.Enabled,
-		&i.Description,
 		&i.Action,
 		&i.Effect,
 		&i.ChannelIdentityID,
-		&i.SubjectChannelType,
 		&i.SourceChannel,
 		&i.SourceConversationType,
 		&i.SourceConversationID,
@@ -106,6 +85,9 @@ func (q *Queries) CreateBotACLRule(ctx context.Context, arg CreateBotACLRulePara
 		&i.CreatedByUserID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Enabled,
+		&i.Description,
+		&i.SubjectChannelType,
 	)
 	return i, err
 }
@@ -306,7 +288,7 @@ SET
   source_thread_id = $10::text,
   updated_at = now()
 WHERE id = $1
-RETURNING id, bot_id, enabled, description, action, effect, channel_identity_id, subject_channel_type, source_channel, source_conversation_type, source_conversation_id, source_thread_id, created_by_user_id, created_at, updated_at
+RETURNING id, bot_id, action, effect, channel_identity_id, source_channel, source_conversation_type, source_conversation_id, source_thread_id, created_by_user_id, created_at, updated_at, enabled, description, subject_channel_type
 `
 
 type UpdateBotACLRuleParams struct {
@@ -322,25 +304,7 @@ type UpdateBotACLRuleParams struct {
 	SourceThreadID         pgtype.Text `json:"source_thread_id"`
 }
 
-type UpdateBotACLRuleRow struct {
-	ID                     pgtype.UUID        `json:"id"`
-	BotID                  pgtype.UUID        `json:"bot_id"`
-	Enabled                bool               `json:"enabled"`
-	Description            pgtype.Text        `json:"description"`
-	Action                 string             `json:"action"`
-	Effect                 string             `json:"effect"`
-	ChannelIdentityID      pgtype.UUID        `json:"channel_identity_id"`
-	SubjectChannelType     pgtype.Text        `json:"subject_channel_type"`
-	SourceChannel          pgtype.Text        `json:"source_channel"`
-	SourceConversationType pgtype.Text        `json:"source_conversation_type"`
-	SourceConversationID   pgtype.Text        `json:"source_conversation_id"`
-	SourceThreadID         pgtype.Text        `json:"source_thread_id"`
-	CreatedByUserID        pgtype.UUID        `json:"created_by_user_id"`
-	CreatedAt              pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt              pgtype.Timestamptz `json:"updated_at"`
-}
-
-func (q *Queries) UpdateBotACLRule(ctx context.Context, arg UpdateBotACLRuleParams) (UpdateBotACLRuleRow, error) {
+func (q *Queries) UpdateBotACLRule(ctx context.Context, arg UpdateBotACLRuleParams) (BotAclRule, error) {
 	row := q.db.QueryRow(ctx, updateBotACLRule,
 		arg.ID,
 		arg.Enabled,
@@ -353,16 +317,13 @@ func (q *Queries) UpdateBotACLRule(ctx context.Context, arg UpdateBotACLRulePara
 		arg.SourceConversationID,
 		arg.SourceThreadID,
 	)
-	var i UpdateBotACLRuleRow
+	var i BotAclRule
 	err := row.Scan(
 		&i.ID,
 		&i.BotID,
-		&i.Enabled,
-		&i.Description,
 		&i.Action,
 		&i.Effect,
 		&i.ChannelIdentityID,
-		&i.SubjectChannelType,
 		&i.SourceChannel,
 		&i.SourceConversationType,
 		&i.SourceConversationID,
@@ -370,6 +331,9 @@ func (q *Queries) UpdateBotACLRule(ctx context.Context, arg UpdateBotACLRulePara
 		&i.CreatedByUserID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Enabled,
+		&i.Description,
+		&i.SubjectChannelType,
 	)
 	return i, err
 }
