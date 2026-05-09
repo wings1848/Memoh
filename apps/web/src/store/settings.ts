@@ -1,4 +1,5 @@
 import type { Locale } from '@/i18n'
+import { watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useColorMode, useStorage } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
@@ -22,26 +23,36 @@ export const useSettingsStore = defineStore('settings', () => {
     document.documentElement.dataset.colorScheme = value
   }
 
-  colorMode.value = theme.value
-  i18n.locale.value = language.value
   if (!isColorSchemeId(colorScheme.value)) {
     colorScheme.value = 'memoh'
   }
-  applyColorScheme(colorScheme.value)
+
+  watch(theme, (value) => {
+    colorMode.value = value
+  }, { immediate: true })
+
+  watch(language, (value) => {
+    i18n.locale.value = value
+  }, { immediate: true })
+
+  watch(colorScheme, (value) => {
+    if (!isColorSchemeId(value)) {
+      colorScheme.value = 'memoh'
+      return
+    }
+    applyColorScheme(value)
+  }, { immediate: true })
 
   const setLanguage = (value: Locale) => {
     language.value = value
-    i18n.locale.value = value
   }
 
   const setTheme = (value: 'light' | 'dark') => {
     theme.value = value
-    colorMode.value = value
   }
 
   const setColorScheme = (value: ColorSchemeId) => {
     colorScheme.value = value
-    applyColorScheme(value)
   }
 
   return {
